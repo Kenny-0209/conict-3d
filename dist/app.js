@@ -7,7 +7,7 @@ import {members,seats as originalSeats,furniture,demoStates,SEAT_REVISION} from 
 import {loadLayout,validateLayout,planBounds,roomBounds} from './layout.js';
 import {createEditor} from './editor.js';
 import {seatView} from './camera.js';
-import {compactUI} from './mobile-ui.js';
+import {compactUI} from './mobile-ui.js?v=mobile20261024b';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let seats=structuredClone(originalSeats),mode='polygon',tab='space',selected=furniture[0],person=members[0],seated=false,walking=false,states={...demoStates},source='demo',wire=false,model,focus='all',pollTimer,observations,selectedSeat;

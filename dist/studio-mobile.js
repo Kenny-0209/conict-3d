@@ -1,8 +1,8 @@
-import {compactUI,uiIcon} from './mobile-ui.js';
+import {compactUI,uiIcon} from './mobile-ui.js?v=mobile20261024b';
 
 const $=s=>document.querySelector(s),body=document.body,sidebar=$('.sidebar'),stage=$('.stage'),nav=$('.topbar nav');
 sidebar.id='studio-sidebar';
-const decorate=(el,icon,label)=>{if(!el)return;const original=el.innerHTML;el.setAttribute('aria-label',label||el.textContent.trim());el.title=el.getAttribute('aria-label');el.innerHTML=uiIcon(icon)+'<span class="studio-desktop-label">'+original+'</span>'};
+const decorate=(el,icon,label)=>{if(!el)return;const original=el.querySelector(':scope>.studio-desktop-label')?.innerHTML||el.innerHTML;el.setAttribute('aria-label',label||el.textContent.trim());el.title=el.getAttribute('aria-label');el.innerHTML=uiIcon(icon)+'<span class="studio-desktop-label">'+original+'</span>'};
 for(const [tab,icon,label] of [['space','overview','공간 둘러보기'],['edit','edit','공간 편집'],['furniture','controls','가구 선택'],['people','people','구성원'],['network','monitor','PC 연결']])decorate(nav.querySelector('[data-tab="'+tab+'"]'),icon,label);
 decorate($('.home-return'),'door','방문 홈페이지로 돌아가기');
 const controls=document.createElement('div');controls.id='studio-mobile-tools';controls.className='studio-mobile-only';
@@ -20,6 +20,7 @@ sidebar.addEventListener('click',e=>{if(compactUI()&&e.target.closest('.object-i
 const sidebarClose=document.createElement('button');sidebarClose.id='studio-sidebar-close';sidebarClose.className='studio-mobile-only';sidebarClose.setAttribute('aria-label','선택·속성 패널 접기');sidebarClose.innerHTML=uiIcon('chevron');sidebar.prepend(sidebarClose);sidebarClose.onclick=()=>setPanel('sidebar',false);
 const planClose=document.createElement('button');planClose.id='studio-plan-close';planClose.className='studio-mobile-only';planClose.setAttribute('aria-label','평면도 접기');planClose.innerHTML=uiIcon('chevron');$('.plan-head>div').append(planClose);planClose.onclick=()=>setPanel('plan',false);
 decorate($('#plan-fit'),'overview','평면도 전체 맞춤');decorate($('#plan-expand'),'expand','평면도 확대');
+$('#plan-expand').addEventListener('click',()=>queueMicrotask(()=>decorate($('#plan-expand'),'expand',stage.classList.contains('plan-expanded')?'3D 화면 함께 보기':'평면도 확대')));
 const toolLabels={select:'선택',boundary:'경계',room:'방',wall:'벽'};
 for(const b of document.querySelectorAll('[data-plan-tool]')){const original=b.textContent;b.dataset.compactLabel=toolLabels[b.dataset.planTool];b.setAttribute('aria-label',original);b.innerHTML='<span class="studio-desktop-label">'+original+'</span><span class="studio-mobile-only">'+toolLabels[b.dataset.planTool]+'</span>'}
 for(const [id,label] of [['add-door','문'],['add-window','창']]){const b=document.getElementById(id);b.setAttribute('aria-label',b.textContent);b.innerHTML='<span class="studio-desktop-label">'+b.textContent+'</span><span class="studio-mobile-only">'+label+'</span>'}
@@ -41,6 +42,7 @@ function syncTab(open=false){
  syncDetail();
 }
 nav.addEventListener('click',e=>{if(e.target.closest('[data-tab]'))queueMicrotask(()=>syncTab(true))});
+new MutationObserver(()=>syncTab(true)).observe(nav,{attributes:true,attributeFilter:['class'],subtree:true});
 window.addEventListener('hashchange',()=>queueMicrotask(()=>syncTab(false)));
 window.addEventListener('lab-device-change',()=>{setPanel('sidebar',false);syncTab(false)});
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&compactUI())setPanel('sidebar',false)});

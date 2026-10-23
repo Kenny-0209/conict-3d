@@ -15,7 +15,7 @@ import {createPCMotion,isWorking} from './pc-motion.js';
 import {mountPCPanel} from './pc-panel.js';
 import {walkingAction,movementDirection,turnYaw} from './movement.js';
 import {analogMovementDirection} from './mobile-core.js';
-import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js';
+import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=mobile20261024b';
 import {official,albums,photos,records,galleryFallback,tourStops,pageLinks} from './content.js?v=orbit20261018';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -60,7 +60,7 @@ function showFailure(){const loader=$('#loader');loader.innerHTML='<b>3D 공간�
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3600)}
 // Visitor walls keep their full 3 m height in every camera mode and tour.
 function setTourMenu(open){$('#tour-menu').hidden=!open;$('#tour-toggle').setAttribute('aria-expanded',String(open))}
-function resize(){dirty=true;lastWalkView=null;const w=house.clientWidth,h=house.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,compactUI()?1:1.25));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();if(mode==='overview'&&tourIndex<0)overview(false)}
+function resize(){dirty=true;lastWalkView=null;const w=house.clientWidth,h=house.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,compactUI()?1:1.25));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();if(mode==='overview'){if(tourIndex<0)overview(false);else frameTourCamera(tourStops[tourIndex])}}
 function cameraTo(position,target,fov=50,duration=1100){controls.enabled=false;camera.clearViewOffset();if(compactUI()&&house.clientHeight>house.clientWidth&&mode==='overview'&&tourIndex>=0)camera.setViewOffset(house.clientWidth,house.clientHeight,0,house.clientHeight*.12,house.clientWidth,house.clientHeight);fly={from:camera.position.clone(),to:V(...position),look:controls.target.clone(),target:V(...target),fov:camera.fov,nextFov:fov,start:performance.now(),duration:reduced?150:duration};}
 function overview(animate=true){
  const w=house.clientWidth,h=house.clientHeight,aspect=w/h,eff=aspect*(compactUI()?.96:.70),width=bounds.maxX-bounds.minX,depth=bounds.maxZ-bounds.minZ,dist=Math.max(17,width/(2*Math.tan(42*Math.PI/360)*eff)*1.12,depth*1.65)*1.15;
@@ -125,8 +125,9 @@ function flyObject(o){
  }
  const width=(footprints[o.kind]?.[0]||1.6)*o.scaleX,d=Math.max(2.4,width/(2*Math.tan(50*Math.PI/360)*Math.max(.35,camera.aspect))*1.12),a=o.rotation*Math.PI/180,height=o.y+(['media-tv','cat','tv'].includes(o.kind)?1.45:.9)*o.scaleY;cameraTo([o.x+Math.sin(a)*d,height+d*.42,o.z+Math.cos(a)*d],[o.x,height,o.z],50);
 }
+function frameTourCamera(s){const o=stopObject(s);if(o)flyObject(o);else{const opening=layout.openings.find(o=>o.id===s.object),p=opening&&openingPosition(layout,opening);if(p)cameraTo([p.x-2,4,p.z+3],[p.x,1,p.z],50);else overview()}}
 function selectTour(i){
- if(entry)return;if(mode!=='overview')setMode('overview');tourIndex=i;house.classList.add('touring');setTourMenu(false);panel.close();const s=tourStops[i],o=stopObject(s);if(o)flyObject(o);else{const p=openingPosition(layout,layout.openings.find(o=>o.id===s.object));if(p)cameraTo([p.x-2,4,p.z+3],[p.x,1,p.z],50);else overview()}
+ if(entry)return;if(mode!=='overview')setMode('overview');tourIndex=i;house.classList.add('touring');setTourMenu(false);panel.close();const s=tourStops[i],o=stopObject(s);frameTourCamera(s);
  $('#tour-card').hidden=false;$('#tour-card').innerHTML='<button class="card-close" id="tour-exit" aria-label="투어 닫기">×</button><button class="mobile-only panel-fold" id="tour-fold" aria-label="투어 설명 접기" aria-expanded="true">'+uiIcon('chevron')+'</button><span class="eyebrow">'+s.eyebrow+'</span><h2>'+s.title+'</h2><p>'+s.description+'</p><button class="primary" id="tour-action">'+s.action+' <span>↗</span></button><div class="tour-progress"><button id="tour-prev" aria-label="이전 장소" '+(i===0?'disabled':'')+'>←</button><span>'+String(i+1).padStart(2,'0')+' / '+String(tourStops.length).padStart(2,'0')+'</span><span class="tour-dots">'+tourStops.map((_,j)=>'<i class="'+(j===i?'active':'')+'"></i>').join('')+'</span><button id="tour-next" aria-label="다음 장소" '+(i===tourStops.length-1?'disabled':'')+'>→</button></div>';
  mobileUI?.syncTour();
  $('#tour-exit').onclick=()=>setMode('overview');$('#tour-prev').onclick=()=>selectTour(i-1);$('#tour-next').onclick=()=>selectTour(i+1);$('#tour-action').onclick=()=>{if(s.type==='album')openAlbum(s.album);else if(['people','desks'].includes(s.type))openPeople();else if(s.type==='person'&&o)greet(interactives.get(o.id));else{setMode('third');if(o)walkTo(interactives.get(o.id))}};
@@ -170,7 +171,7 @@ function openHelp(){openPanel('HOW TO EXPLORE','<h2 id="panel-title">천천히, 
 
 // UI events and actual floor picking share the same navigation path.
 function openMobileHelp(){openPanel('둘러보기','<h2 id="panel-title">손끝으로 둘러보기</h2><div class="help-list"><article><h3>이동</h3><p>입장 후 왼쪽 원을 밀어 걸어요. 손을 떼면 멈춥니다. 바닥을 눌러 이동할 수도 있어요.</p></article><article><h3>시점</h3><p>화면을 끌어 둘러보세요. 전체보기에서는 두 손가락으로 확대·축소할 수 있어요. 아래 눈·사람 아이콘으로 시점을 바꿉니다.</p></article><article><h3>상호작용</h3><p>사람이나 문에 다가가 오른쪽 손 모양 버튼을 누르세요. 길 모양 아이콘에서는 장소별 투어를 고를 수 있어요.</p></article><article><h3>패널</h3><p>접기 화살표로 안내를 줄이거나 다시 펼쳐요. 상세 패널은 위쪽을 아래로 밀어 접을 수도 있어요. 메뉴와 지도는 필요할 때만 꺼내세요.</p></article></div>')}
-$('#home').onclick=()=>setMode('overview');$('#enter-button').onclick=()=>setMode('third');$('#about-button').onclick=openAbout;$('#people-button').onclick=openPeople;$('#album-button').onclick=()=>openAlbum('space');$('#help-button').onclick=()=>compactUI()?openMobileHelp():openHelp();$('#panel-close').onclick=closePanel;$('#photo-close').onclick=()=>$('#lightbox').close();$('#photo-prev').onclick=()=>showPhoto(photoIndex-1);$('#photo-next').onclick=()=>showPhoto(photoIndex+1);
+$('#home').onclick=()=>setMode('overview');$('#enter-button').onclick=()=>setMode(compactUI()?'first':'third');$('#about-button').onclick=openAbout;$('#people-button').onclick=openPeople;$('#album-button').onclick=()=>openAlbum('space');$('#help-button').onclick=()=>compactUI()?openMobileHelp():openHelp();$('#panel-close').onclick=closePanel;$('#photo-close').onclick=()=>$('#lightbox').close();$('#photo-prev').onclick=()=>showPhoto(photoIndex-1);$('#photo-next').onclick=()=>showPhoto(photoIndex+1);
 panel.addEventListener('cancel',e=>{e.preventDefault();closePanel()});panel.addEventListener('click',e=>{if(e.target===panel){const r=panel.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closePanel()}});
 $('#lightbox').addEventListener('keydown',e=>{if(e.key==='ArrowLeft')showPhoto(photoIndex-1);if(e.key==='ArrowRight')showPhoto(photoIndex+1)});
 $('#tour-list').innerHTML=tourStops.map((s,i)=>'<button data-stop="'+i+'"><span>'+String(i+1).padStart(2,'0')+'</span>'+s.title+'<b>↗</b></button>').join('');$$('[data-stop]').forEach(b=>b.onclick=()=>selectTour(Number(b.dataset.stop)));$('#tour-toggle').onclick=()=>setTourMenu($('#tour-menu').hidden);$$('[data-view]').forEach(b=>b.onclick=()=>setMode(b.dataset.view));$('#nearby').onclick=()=>{if(near)showObject(near)};

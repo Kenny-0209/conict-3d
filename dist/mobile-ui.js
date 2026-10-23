@@ -103,13 +103,14 @@ export function mountVisitorMobileUI({canWalk,onJoystick,onStop,closePanel}){
  tools.onclick=()=>{const hidden=house.classList.toggle('controls-collapsed');tools.setAttribute('aria-expanded',String(!hidden));tools.setAttribute('aria-label',hidden?'이동 조작 펼치기':'이동 조작 접기');resetStick();onStop()};
  document.querySelectorAll('[data-look]').forEach(b=>decorate(b,b.dataset.look==='left'?'turnLeft':'turnRight'));
  window.addEventListener('lab-device-change',()=>{
-  resetStick();onStop();setMenu(false);house.classList.remove('controls-collapsed');tools.setAttribute('aria-expanded','true');
+  resetStick();onStop();setMenu(false);house.classList.remove('controls-collapsed');tools.setAttribute('aria-expanded','true');tools.setAttribute('aria-label','이동 조작 접기');
   if(panel.open){const collapsed=panel.classList.contains('is-collapsed');panel.close();showResponsivePanel(panel);panel.classList.toggle('is-collapsed',compactUI()&&collapsed)}
-  if(!compactUI()){panel.classList.remove('is-collapsed');welcome.classList.remove('is-collapsed')}
+  if(!compactUI()){panel.classList.remove('is-collapsed');welcome.classList.remove('is-collapsed');welcomeFold.setAttribute('aria-expanded','true');welcomeFold.setAttribute('aria-label','안내 접기')}
   syncPanelHeading(panel);
  });
  return {resetStick,syncTour(){
   const card=document.querySelector('#tour-card');if(!card.querySelector('#tour-fold'))return;
-  card.classList.remove('is-collapsed');const fold=card.querySelector('#tour-fold');fold.setAttribute('aria-expanded','true');fold.onclick=()=>{const collapsed=card.classList.toggle('is-collapsed');fold.setAttribute('aria-expanded',String(!collapsed));fold.setAttribute('aria-label',collapsed?'투어 설명 펼치기':'투어 설명 접기')};
+  const fold=card.querySelector('#tour-fold'),sync=()=>{const collapsed=card.classList.contains('is-collapsed');fold.setAttribute('aria-expanded',String(!collapsed));fold.setAttribute('aria-label',collapsed?'투어 설명 펼치기':'투어 설명 접기')};
+  sync();fold.onclick=()=>{card.classList.toggle('is-collapsed');sync()};
  }};
 }

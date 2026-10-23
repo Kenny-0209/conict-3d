@@ -17,6 +17,7 @@ html[data-ui=compact] body:not([data-studio-tab=edit]) #studio-plan-toggle{displ
 html[data-ui=compact] .topbar nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));height:58px;margin:0;padding:6px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;z-index:40;border:1px solid #cbd6c3;border-radius:18px;background:#faf8eff5;backdrop-filter:blur(14px);box-shadow:0 5px 25px #25443124}
 html[data-ui=compact] .topbar nav button{border:0;border-radius:12px;min-height:44px;padding:10px;display:flex;align-items:center;justify-content:center}
 html[data-ui=compact] .topbar nav button.active{background:#315b47;color:#fff8e8}
+html[data-ui=compact] .topbar nav button.active:after{display:none}
 html[data-ui=compact] .topbar nav button>.ui-icon{display:block}
 html[data-ui=compact] .topbar nav .studio-desktop-label{display:none}
 html[data-ui=compact] main{height:calc(100dvh - 60px);min-height:0;display:block;position:relative}
