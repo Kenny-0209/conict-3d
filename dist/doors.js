@@ -2,7 +2,7 @@ import {openingPosition,doorPoses,doorInwardSign} from './layout.js';
 
 const clamp=v=>Math.max(0,Math.min(1,v));
 const ease=t=>t*t*(3-2*t);
-export function doorName(o){return o.name||(o.id==='d2'?'연구실 출입문':o.id==='d1'?'교수실 연결문':'문')}
+export function doorName(o){return o.name||(o.id==='d2'?'526호 연구생 공간 출입문':o.id==='d1'?'501호 교수님방 연결문':'문')}
 
 // These segments follow the same hinge and panel dimensions as models.js.
 export function doorSegments(layout,opening,fraction){

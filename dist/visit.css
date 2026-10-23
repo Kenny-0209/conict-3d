@@ -33,3 +33,5 @@
 .atmosphere-dark .inside .brand{color:#1c3b31}
 .atmosphere-dark .inside .brand-mark{color:#5c7d61}
 .atmosphere-dark .inside .brand small{color:#69796d}
+
+.media-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}.media-card{display:flex;flex-direction:column;gap:8px;text-align:left;padding:22px;border:1px solid #d8dfce;border-radius:9px;background:#eef0e5;color:#264b39}.media-card b{font-size:17px}.media-card span{font-size:11px;line-height:1.7;color:#66765e}.event-photo{position:relative}.event-photo img{height:auto}.photo-count{position:absolute;bottom:8px;right:8px;padding:4px 8px;border-radius:4px;background:#17352ddd;color:white;font-size:10px}.dialog-actions a.primary,.dialog-actions a.secondary{display:inline-flex;align-items:center;text-decoration:none}.dialog-actions a.secondary{padding:12px 15px;border:1px solid #ccd7c0;border-radius:6px;color:#35543e}.record-card h3{overflow-wrap:anywhere}@media(max-width:600px){.media-card{padding:15px}.media-card b{font-size:14px}.media-card span{font-size:10px}.event-photo{margin:-14px -14px 14px}}
