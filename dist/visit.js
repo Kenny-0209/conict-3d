@@ -15,12 +15,14 @@ import {createPCMotion,isWorking} from './pc-motion.js';
 import {mountPCPanel} from './pc-panel.js';
 import {walkingAction,movementDirection,turnYaw} from './movement.js';
 import {analogMovementDirection} from './mobile-core.js';
-import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=edit20261024b';
+import {thirdPersonView,facingScore} from './walk-view.js';
+import {createTargetOutline} from './target-outline.js';
+import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=walk20261024';
 import {official,albums,photos,records,galleryFallback,tourStops,pageLinks} from './content.js?v=orbit20261018';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const canvas=$('#world'),house=$('#house'),panel=$('#panel'),layout=loadLayout(),nav=createNavigation(layout);
-let mobileUI=null,stickInput={forward:0,side:0},mobileWalkHintShown=false;
+let mobileUI=null,stickInput={forward:0,side:0};
 const people=members.map(m=>({...m})),positions=layout.objects.filter(o=>o.kind==='seat');
 // Reuse editor seat assignments when available, without mistaking virtual avatars for LAN presence.
 let savedAssignments;try{savedAssignments=JSON.parse(localStorage.getItem('conict-seat-members')||'null')}catch{}
@@ -49,11 +51,12 @@ const doors=createDoors({layout,root:lab,reduced,
 nav.setDynamicObstacle(doors.blocks);
 for(const r of doors.records){interactives.set(r.id,{node:r.node,o:r.object,door:r});r.node.traverse(n=>{if(n.isMesh)collideWalls.push(n)})}
 const guest=createGuest();scene.add(guest.root);guest.root.visible=false;
+const targetOutline=createTargetOutline(scene,()=>dirty=true);
 const spawn=nav.spawn();let player=spawn||{x:centre.x,z:centre.z},yaw=-Math.PI*.35,pitch=0,mode='overview',path=[],pendingInteraction=null,tourIndex=-1,fly=null,entry=null,returnState=null,near=null,wave=null,phase=0,disposed=false;
 guest.root.position.set(player.x,0,player.z);let lastTime=performance.now(),toastTimer,hovered=null;
 const faded=new Set();
 function restoreOcclusion(){for(const node of faded)node.traverse(m=>{if(m.userData.cameraMaterial){const b=m.userData.cameraMaterial;Object.assign(m.material,{opacity:b.opacity,transparent:b.transparent,depthWrite:b.depthWrite})}});faded.clear()}
-function softenOcclusion(target,desired){restoreOcclusion();const delta=desired.clone().sub(target),d=delta.length();raycaster.set(target,delta.normalize());for(const h of raycaster.intersectObject(lab,true)){if(h.distance>d||h.object.userData.personSeat)continue;let n=h.object;while(n&&n!==lab&&!n.userData.layoutKind)n=n.parent;if(!n||!(["object","opening"].includes(n.userData.layoutKind)))continue;faded.add(n)}for(const node of faded)node.traverse(m=>{if(!m.isMesh||m.userData.personSeat)return;if(!m.userData.cameraMaterial){m.material=m.material.clone();m.userData.cameraMaterial={opacity:m.material.opacity,transparent:m.material.transparent,depthWrite:m.material.depthWrite}}m.material.opacity=m.userData.cameraMaterial.opacity*.16;m.material.transparent=true;m.material.depthWrite=false})}
+function softenOcclusion(target,desired){restoreOcclusion();const delta=desired.clone().sub(target),d=delta.length();raycaster.set(target,delta.normalize());for(const h of raycaster.intersectObject(lab,true)){if(h.distance>d||h.object.userData.personSeat)continue;let n=h.object;while(n&&n!==lab&&!n.userData.layoutKind)n=n.parent;if(!n||!(["object","opening","wall"].includes(n.userData.layoutKind)))continue;faded.add(n)}for(const node of faded)node.traverse(m=>{if(!m.isMesh||m.userData.personSeat)return;if(!m.userData.cameraMaterial){m.material=m.material.clone();m.userData.cameraMaterial={opacity:m.material.opacity,transparent:m.material.transparent,depthWrite:m.material.depthWrite}}m.material.opacity=m.userData.cameraMaterial.opacity*.16;m.material.transparent=true;m.material.depthWrite=false})}
 const raycaster=new T.Raycaster(),mouse=new T.Vector2(),floorPlane=new T.Plane(V(0,1,0),0),walkInputs=new Map(),canvasPointers=new Set();let drag=null;
 
 function showFailure(){const loader=$('#loader');loader.innerHTML='<b>3D 공간을 열 수 없어요</b><small>브라우저의 그래픽 가속을 확인해 주세요.</small><a href="'+official+'/index.do">공식 연구실 홈페이지 ↗</a>'}
@@ -74,7 +77,7 @@ function setMode(next){
  if(entry)return;if(!spawn&&next!=='overview'){toast('현재 배치에 걸을 공간이 없어요. 공간 편집에서 통로를 확인해 주세요.');return}
  panel.close();restoreOcclusion();path=[];pendingInteraction=null;fly=null;walkInputs.clear();stickInput={forward:0,side:0};mobileUI?.resetStick();tourIndex=-1;$('#tour-card').hidden=true;setTourMenu(false);mode=next;ceiling.setFirstPerson(mode==='first');house.classList.toggle('inside',mode==='first');house.classList.toggle('walking',mode!=='overview');house.classList.remove('touring');$('#walk-hud').hidden=mode==='overview';guest.root.visible=mode==='third';controls.enabled=mode==='overview';camera.clearViewOffset();camera.fov=mode==='overview'?42:64;camera.updateProjectionMatrix();
  $$('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===mode)));if(mode==='overview')overview();else{guest.pose(0);guest.gait(0,false);updateWalkCamera(true);canvas.focus();updateNearby()}
- if(compactUI()&&mode!=='overview'&&!mobileWalkHintShown){mobileWalkHintShown=true;toast('왼쪽 원을 밀어 이동 · 화면을 끌어 시점 조절')}
+ mobileUI?.showLookHint(mode);if(mode==='overview')updateNearby();
 }
 function updateWalkCamera(immediate=false){
  const view=[mode,player.x,player.z,yaw,pitch];
@@ -82,15 +85,27 @@ function updateWalkCamera(immediate=false){
  lastWalkView=view;dirty=true;
  const eye=V(player.x,1.62,player.z),dir=V(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),Math.cos(yaw)*Math.cos(pitch));
  if(mode==='first'){restoreOcclusion();camera.position.copy(eye);camera.lookAt(eye.clone().add(dir));controls.target.copy(eye.clone().add(dir));return true}
- const target=V(player.x,1.1,player.z),desired=V(player.x-Math.sin(yaw)*2.4,2.15+pitch*.8,player.z-Math.cos(yaw)*2.4),delta=desired.clone().sub(target),d=delta.length();raycaster.set(target,delta.normalize());const hit=raycaster.intersectObjects(collideWalls,false).find(h=>h.distance<d);if(hit)desired.copy(target).addScaledVector(delta,Math.max(.28,hit.distance-.12));const available=house.clientWidth<600?.72:.9,fitFov=Math.min(92,Math.max(64,2*Math.atan(1.9/(2*desired.distanceTo(target)*available))*180/Math.PI));if(Math.abs(camera.fov-fitFov)>.05){camera.fov=fitFov;camera.updateProjectionMatrix()}softenOcclusion(target,desired);shadowDirty=true;camera.position.copy(desired);controls.target.copy(target.clone().add(V(Math.sin(yaw)*.25,0,Math.cos(yaw)*.25)));camera.lookAt(controls.target);return true;
+ const viewFrame=thirdPersonView({...player,yaw,pitch,aspect:camera.aspect}),target=V(...viewFrame.target),desired=V(...viewFrame.position);if(camera.fov!==viewFrame.fov){camera.fov=viewFrame.fov;camera.updateProjectionMatrix()}softenOcclusion(target,desired);shadowDirty=true;camera.position.copy(desired);controls.target.copy(target);camera.lookAt(target);return true;
 }
-function nearestInteractive(){let result=null,best=3;for(const item of interactives.values()){const p=item.o.kind==='seat'?localPoint(item.o,0,.82):item.o,d=Math.hypot(player.x-p.x,player.z-p.z);if(d>2.0)continue;const a=Math.atan2(p.x-player.x,p.z-player.z),angle=Math.abs(Math.atan2(Math.sin(a-yaw),Math.cos(a-yaw)));if(angle>1.05)continue;const primary=item.person||item.door||['media-tv','cat','tv','coffee-cabinet','coffee-tools'].includes(item.o.kind),score=d+angle*.6-(primary?.45:0);if(score<best){best=score;result=item}}return result}
+function nearestInteractive(){
+ let result=null,best=Infinity;
+ const eye=V(player.x,1.3,player.z);
+ for(const item of interactives.values()){
+  const p=item.o.kind==='seat'?localPoint(item.o,0,.82):item.o,primary=Boolean(item.person||item.door||['media-tv','cat','tv','coffee-cabinet','coffee-tools'].includes(item.o.kind));
+  const score=facingScore({player,yaw,target:p,primary});if(score>=best)continue;
+  const aim=V(p.x,item.door?1.1:Math.max(.65,Math.min(1.4,(item.o.y||0)+.75)),p.z),delta=aim.sub(eye),distance=delta.length();
+  raycaster.set(eye,delta.normalize());
+  const blocked=raycaster.intersectObjects(collideWalls,false).some(hit=>{if(hit.distance>=distance-.08)return false;let node=hit.object;while(node){if(node===item.node)return false;node=node.parent}return true});
+  if(!blocked){best=score;result=item}
+ }
+ return result;
+}
 function isSpecial(o){return Boolean(o)}
 function interactionLabel(item){if(item.door)return doors.actionLabel(item.o.id);return item.person?item.person.name+'의 자리 · 인사 / 컴퓨터':['media-tv','cat','tv'].includes(item.o.kind)?'연구실 앨범 열기':['coffee-cabinet','coffee-tools'].includes(item.o.kind)?'워크숍·세미나 펼치기':item.o.name+' 둘러보기'}
 let lastMap='';
 function updateNearby(){
- if(mode==='overview'||entry||panelBlocks(panel)){$('#nearby').hidden=true;return}
- near=nearestInteractive();$('#nearby').hidden=!near;
+ if(mode==='overview'||entry||panelBlocks(panel)||$('#lightbox').open){near=null;targetOutline.set(null);$('#nearby').hidden=true;delete $('#nearby').dataset.target;return}
+ near=nearestInteractive();targetOutline.set(near);$('#nearby').hidden=!near;if(near)$('#nearby').dataset.target=near.o.id;else delete $('#nearby').dataset.target;
  if(near){const label=interactionLabel(near),short=near.door?(near.door.target===1?'닫기':'열기'):near.person?'대화':['media-tv','cat','tv','coffee-cabinet','coffee-tools'].includes(near.o.kind)?'앨범':'살펴보기',html=compactUI()?uiIcon(near.door?'door':'hand')+'<span class="action-label">'+short+'</span>':'<small>E / 클릭</small>'+esc(label);$('#nearby').setAttribute('aria-label',label);if($('#nearby').innerHTML!==html)$('#nearby').innerHTML=html}
  const r=layout.rooms.find(r=>contains(r.points,player)),label=r?.name||'두 방을 잇는 문';
  if($('#location-label').textContent!==label)$('#location-label').textContent=label;
@@ -132,7 +147,7 @@ function selectTour(i){
  mobileUI?.syncTour();
  $('#tour-exit').onclick=()=>setMode('overview');$('#tour-prev').onclick=()=>selectTour(i-1);$('#tour-next').onclick=()=>selectTour(i+1);$('#tour-action').onclick=()=>{if(s.type==='album')openAlbum(s.album);else if(['people','desks'].includes(s.type))openPeople();else if(s.type==='person'&&o)greet(interactives.get(o.id));else{setMode('third');if(o)walkTo(interactives.get(o.id))}};
 }
-function openPanel(kicker,html){const folded=panel.open&&panel.classList.contains('is-collapsed')&&$('#panel-kicker').textContent===kicker;walkInputs.clear();stickInput={forward:0,side:0};mobileUI?.resetStick();path=[];pendingInteraction=null;$('#hover-label').hidden=true;$('#panel-kicker').textContent=kicker;$('#panel-body').innerHTML=html;panel.classList.toggle('is-collapsed',folded);syncPanelHeading(panel);showResponsivePanel(panel);$('#nearby').hidden=true}
+function openPanel(kicker,html){const folded=panel.open&&panel.classList.contains('is-collapsed')&&$('#panel-kicker').textContent===kicker;walkInputs.clear();stickInput={forward:0,side:0};mobileUI?.resetStick();path=[];pendingInteraction=null;$('#hover-label').hidden=true;$('#panel-kicker').textContent=kicker;$('#panel-body').innerHTML=html;panel.classList.toggle('is-collapsed',folded);syncPanelHeading(panel);showResponsivePanel(panel);updateNearby()}
 function closePanel(){panel.close();if(entry)leavePersonal();else if(mode!=='overview')canvas.focus()}
 function openAbout(){openPanel('CONSTRUCTION INNOVATION · DIGITAL TECHNOLOGY','<h2 id="panel-title">사람과 기술이 만나는 연구실</h2><p class="panel-sub">CONICT · 건설 ICT 연구실</p><div class="intro-grid"><img src="./assets/room-19.jpg" alt="연구원 공간과 미팅 테이블"><div><p>서울과학기술대학교의 CONICT 연구실입니다. 건설 현장에 디지털 기술을 연결하는 일을 연구하며, 이 공간에서 함께 배우고 생각을 나눕니다.</p><p>로보틱스, 컴퓨터 비전, 건설 공정과 시공 관리가 공식 홈페이지에 소개된 연구 방향입니다. 각자의 연구 이야기는 구성원이 직접 만드는 개인 페이지로 이어질 예정입니다.</p><div class="info-row"><span>지도교수</span><b>김태훈</b></div><div class="info-row"><span>둘러볼 공간</span><b>연구원 공간 · 교수실과 미팅 공간</b></div><a class="text-link" href="'+official+'/index.do" target="_blank" rel="noopener">공식 연구실 홈페이지 ↗</a></div></div>')}
 function openPeople(){openPanel('MEET THE PEOPLE','<h2 id="panel-title">CONICT 연구실의 사람들</h2><p class="panel-sub">자리를 고르면 3D 공간이 그쪽으로 안내합니다.</p><div class="people-grid">'+positions.map(o=>{const m=personFor(o);return '<button class="person-card" data-person="'+o.id+'"><img src="./assets/'+(m.professor?'profile-08.webp':'profile-'+String(Number(m.id.slice(1))).padStart(2,'0')+'.webp')+'" alt="'+m.name+'"><b>'+m.name+'</b><span>'+m.role+'</span><small>'+visitorSeats.find(s=>s.id===o.seatId).label+' →</small></button>'}).join('')+'</div><p class="disclosure">외부 구성원 이준영·강민균의 자리는 이번 공간에 배치하지 않았습니다. 아바타는 구성원 소개용이며 실제 재실 상태와 별개입니다.</p>');$$('[data-person]').forEach(b=>b.onclick=()=>{panel.close();const item=interactives.get(b.dataset.person);if(mode==='overview'){flyObject(item.o);greet(item)}else walkTo(item,'person')})}
@@ -145,7 +160,7 @@ function greet(item){
 function seatChoice(item){const m=item.person;openPanel('AT THE DESK','<h2 id="panel-title">'+m.name+'의 자리</h2><p>'+visitorSeats.find(s=>s.id===item.o.seatId).label+' · '+m.role+'</p><p>인사를 건네거나, 잠시 의자에 앉아 컴퓨터 화면으로 들어가 보세요.</p><div class="dialog-actions"><button class="secondary" id="seat-greet">인사 건네기 👋</button><button class="primary" id="seat-enter">앉아서 컴퓨터 보기 ↗</button></div>');$('#seat-greet').onclick=()=>greet(item);$('#seat-enter').onclick=()=>{panel.close();enterComputer(item)}}
 function enterComputer(item){
  if(entry)return;restoreOcclusion();returnState={mode,player:{...player},yaw,pitch,position:camera.position.clone(),target:controls.target.clone(),fov:camera.fov};
- house.classList.add('entering');setTourMenu(false);$('#tour-card').hidden=true;path=[];controls.enabled=false;camera.clearViewOffset();walkInputs.clear();
+ targetOutline.set(null);mobileUI?.hideLookHint();house.classList.add('entering');setTourMenu(false);$('#tour-card').hidden=true;path=[];controls.enabled=false;camera.clearViewOffset();walkInputs.clear();
  const chair=localPoint(item.o,0,.82),eye=localPoint(item.o,0,.73),screen=localPoint(item.o,0,.075),target=localPoint(item.o,0,-.06),start=guest.root.position.clone();
  if(mode==='overview'){const approach=nav.approach(item.o,player);if(approach){player={...approach.point};guest.root.position.set(player.x,0,player.z)}}
  guest.root.visible=true;guest.pose(0);guest.gait(0,false);item.node.userData.avatar&&(item.node.userData.avatar.visible=false);
@@ -243,12 +258,13 @@ function tick(now){if(disposed)return;requestAnimationFrame(tick);if(document.hi
  if(atmosphere.tick(dt))dirty=true;
  if(dirty)for(const tag of doorTagNodes){const p=tag.point.clone().project(camera);tag.el.style.left=(p.x*.5+.5)*house.clientWidth+'px';tag.el.style.top=(-p.y*.5+.5)*house.clientHeight+'px';tag.el.hidden=mode!=='overview'||tourIndex>=0||p.z>1||p.z< -1}
  if(dirty)for(const tag of roomTagNodes){const p=tag.point.clone().project(camera);tag.el.style.left=(p.x*.5+.5)*house.clientWidth+'px';tag.el.style.top=(-p.y*.5+.5)*house.clientHeight+'px';tag.el.hidden=mode!=='overview'||tourIndex>=0||p.z>1}
+ if(targetOutline.update())dirty=true;
  if(dirty){renderer.shadowMap.needsUpdate=shadowDirty;renderer.render(scene,camera);rendered=true;dirty=shadowDirty=false}
  profiler.end(perfStart,rendered);
 }
 window.addEventListener('lab-visual-change',()=>dirty=shadowDirty=true);canvas.addEventListener('webglcontextrestored',()=>dirty=shadowDirty=true);
 document.addEventListener('visibilitychange',()=>{lastTime=performance.now()});window.addEventListener('resize',resize);window.addEventListener('storage',e=>{if(['conict-layout-v1','conict-seat-members'].includes(e.key))toast('편집한 배치가 저장되었어요. 새로고침하면 홈페이지에도 반영됩니다.')});resize();$('#loader').hidden=true;requestAnimationFrame(tick);
-window.addEventListener('pagehide',()=>{disposed=true;weatherClient.close();atmosphere.dispose();ceiling.dispose();renderer.dispose()});
+window.addEventListener('pagehide',()=>{disposed=true;weatherClient.close();atmosphere.dispose();ceiling.dispose();targetOutline.dispose();renderer.dispose()});
 
 mountPCPanel({items:[...interactives.values()],motion:pcMotion,openPanel,panel});
 mobileUI=mountVisitorMobileUI({canWalk,onJoystick:v=>{stickInput=v;if(v.forward||v.side)manualControl()},onStop:()=>{walkInputs.clear();stickInput={forward:0,side:0};drag=null;canvasPointers.clear()},closePanel});

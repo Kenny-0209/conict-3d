@@ -136,3 +136,32 @@ html[data-ui=compact] .photo-footer button{min-width:44px;min-height:44px}
  html[data-ui=compact] .look-pad{bottom:42px}
  html[data-ui=compact] .nearby{bottom:112px}
 }
+
+/* A one-second, non-blocking first-use gesture in the centre of either orientation. */
+#look-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:148px;height:148px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;background:rgba(0,0,0,.64);color:#fff;z-index:50;pointer-events:none;user-select:none;box-shadow:0 4px 24px #0002}
+#look-hint[hidden]{display:none}
+.look-hint-gesture{display:flex;align-items:center;justify-content:center;gap:5px;width:126px;height:69px}
+.look-hint-finger{width:57px;height:64px;flex-shrink:0;animation:look-hint-swipe 1s ease-in-out}
+.look-hint-arrow{font-size:25px;line-height:1}
+#look-hint b{font:700 12px/1.1 system-ui,sans-serif;letter-spacing:3px;padding-left:3px}
+@keyframes look-hint-swipe{0%,100%{transform:translateX(-13px)}50%{transform:translateX(13px)}}
+@media(prefers-reduced-motion:reduce){.look-hint-finger{animation:none}}
+html[data-ui=desktop] #look-hint{display:none}
+html[data-ui=compact]{--safe-left:max(12px,env(safe-area-inset-left));--safe-right:max(12px,env(safe-area-inset-right))}
+html[data-ui=compact] .topbar{padding-left:var(--safe-left);padding-right:var(--safe-right)}
+html[data-ui=compact] .topbar nav{right:var(--safe-right)}
+html[data-ui=compact] .walk-location{left:var(--safe-left)}
+html[data-ui=compact] #walk-stick{left:max(20px,env(safe-area-inset-left))}
+html[data-ui=compact] .look-pad{right:max(18px,env(safe-area-inset-right))}
+html[data-ui=compact] .nearby{right:max(20px,env(safe-area-inset-right))}
+@media(orientation:portrait){html[data-ui=compact] .experience-bar{left:var(--safe-left);right:var(--safe-right)}}
+@media(orientation:landscape) and (max-height:540px){
+ html[data-ui=compact] .welcome{left:var(--safe-left)}
+ html[data-ui=compact] .walking .topbar{padding-top:max(8px,env(safe-area-inset-top))}
+ html[data-ui=compact] #walk-stick{bottom:max(24px,env(safe-area-inset-bottom))}
+ html[data-ui=compact] .look-pad{bottom:max(30px,env(safe-area-inset-bottom))}
+ html[data-ui=compact] .nearby{bottom:98px}
+ html[data-ui=compact] .minimap{top:66px;right:var(--safe-right);height:100px}
+ html[data-ui=compact] #panel,html[data-ui=compact] .context-card{right:var(--safe-right)}
+ #look-hint{width:132px;height:132px;gap:3px}
+}
