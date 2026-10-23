@@ -77,11 +77,15 @@ export function mountVisitorMobileUI({canWalk,onJoystick,onStop,closePanel}){
  decorate(document.querySelector('#enter-button'),'walk','입장');
  const lookHint=document.createElement('div');lookHint.id='look-hint';lookHint.hidden=true;lookHint.setAttribute('role','status');lookHint.setAttribute('aria-label','화면을 좌우로 드래그해서 둘러보세요.');
  lookHint.innerHTML='<div class="look-hint-gesture" aria-hidden="true"><span class="look-hint-arrow">←</span><svg class="look-hint-finger" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M25 35V13a4 4 0 0 1 8 0v18-4a4 4 0 0 1 8 0v7-3a4 4 0 0 1 8 0v7-1a4 4 0 0 1 8 0v8c0 10-7 16-17 16h-4c-6 0-9-3-12-7L13 40a4 4 0 0 1 6-5l6 8"/></svg><span class="look-hint-arrow">→</span></div><b aria-hidden="true">DRAG</b>';
- house.append(lookHint);const seenLookHints=new Set();let lookHintTimer;
- const hideLookHint=()=>{clearTimeout(lookHintTimer);lookHint.hidden=true};
+ house.append(lookHint);const seenLookHints=new Set();let lookHintFrame,lookHintAnimation;
+ const hideLookHint=()=>{cancelAnimationFrame(lookHintFrame);lookHintAnimation?.cancel();lookHintAnimation=null;lookHint.hidden=true};
  const showLookHint=mode=>{
   hideLookHint();if(!compactUI()||!['first','third'].includes(mode)||seenLookHints.has(mode))return;
-  seenLookHints.add(mode);lookHint.dataset.view=mode;lookHint.hidden=false;lookHintTimer=setTimeout(hideLookHint,1000);
+  seenLookHints.add(mode);lookHint.dataset.view=mode;
+  // Let the initial 3D camera frame paint before starting the one-second guide.
+  lookHintFrame=requestAnimationFrame(()=>{lookHintFrame=requestAnimationFrame(()=>{
+   lookHint.hidden=false;lookHintAnimation=lookHint.animate([{opacity:1},{opacity:1}],{duration:1000});lookHintAnimation.onfinish=hideLookHint;
+  })});
  };
  const menu=document.createElement('button');menu.id='mobile-menu';menu.className='mobile-only icon-button';menu.setAttribute('aria-label','메뉴 열기');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-controls',nav.id);menu.innerHTML=uiIcon('menu');nav.before(menu);
  const setMenu=open=>{house.classList.toggle('menu-open',open);menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'메뉴 닫기':'메뉴 열기');menu.innerHTML=uiIcon(open?'close':'menu')};

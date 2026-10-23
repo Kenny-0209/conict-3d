@@ -17,7 +17,7 @@ import {walkingAction,movementDirection,turnYaw} from './movement.js';
 import {analogMovementDirection} from './mobile-core.js';
 import {thirdPersonView,facingScore} from './walk-view.js';
 import {createTargetOutline} from './target-outline.js';
-import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=walk20261024';
+import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=walk20261024b';
 import {official,albums,photos,records,galleryFallback,tourStops,pageLinks} from './content.js?v=orbit20261018';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
