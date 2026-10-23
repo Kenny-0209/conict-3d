@@ -40,8 +40,8 @@ motion.setStates(on);
 assert(motion.records.every(r=>r.mode==='seated'));
 const initial=motion.records.map(r=>r.breakRemaining),departuresBySeat=motion.records.map(()=>[]),previousCounts=motion.records.map(()=>0),returned=new Set(),observed=new Set();
 assert(new Set(initial.map(x=>x.toFixed(3))).size===8,'first departures must be staggered');
-assert(initial.every(x=>x>=15&&x<180));
-for(let i=1;i<initial.length;i++)assert(initial[i]-initial[i-1]>10,'first departures must be visibly separate');
+assert(initial.every(x=>x>=6&&x<46));
+assert(new Set(initial.map(x=>Math.floor((x-6)/5))).size>4,'first departures must be visibly spread');
 let maxRest=0,maxBrew=0,sips=0,pours=0,stateIsolation=false;
 for(let frame=0;frame<22500;frame++){
  const time=(frame+1)*.04;
@@ -52,7 +52,7 @@ for(let frame=0;frame<22500;frame++){
  for(const [i,r] of motion.records.entries()){
   const previous=beforeMotion[i];if(previous.coffee&&['rest','drink'].includes(previous.mode)&&r.mode!==previous.mode)assert.equal(coffeeSip(previous.elapsed+.04).phase,'hold','finish lowering the cup before leaving the break');
   observed.add(r.mode);assert(Number.isFinite(r.body.position.x)&&Number.isFinite(r.body.position.y));
-  if(['lounge-walk','return','brew','drink'].includes(r.mode))assert(nav.walkable(r.pos),r.item.o.id+' '+r.mode+' must be on walkable floor');
+  if(['roam','lounge-walk','return','brew','drink'].includes(r.mode))assert(nav.walkable(r.pos),r.item.o.id+' '+r.mode+' must be on walkable floor');
   if(r.activity)assert.equal(motion.lounge.owners.get(r.activity.slot.id),r);
   if(r.hasCoffee&&r.loungeRig.cup.visible)sips++;
   if(r.breakCount!==previousCounts[i]){assert.equal(r.breakCount,previousCounts[i]+1);departuresBySeat[i].push(time);previousCounts[i]=r.breakCount}
@@ -69,7 +69,7 @@ for(let frame=0;frame<22500;frame++){
  if(frame===15000)motion.setStates(on);
 }
 assert(maxRest>=1&&maxBrew===1&&sips>0&&pours>0);assert(stateIsolation);assert.equal(returned.size,8);
-for(const times of departuresBySeat){assert(times.length>=4,'every person must keep taking breaks');for(let i=1;i<times.length;i++)assert(times[i]-times[i-1]>=179.99,'no new departure before 180 seconds')}
+for(const times of departuresBySeat){assert(times.length>=3,'every person must keep taking breaks');for(let i=1;i<times.length;i++)assert(times[i]-times[i-1]>=116.99,'no new departure before the minimum random interval')}
 const capacity=motion.lounge;
 for(const r of motion.records)capacity.release(r);
 const reservations=Array.from({length:4},()=>({pos:nav.spawn()}));
