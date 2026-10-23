@@ -1,4 +1,4 @@
-import {compactUI,uiIcon} from './mobile-ui.js?v=edit20261024';
+import {compactUI,uiIcon} from './mobile-ui.js?v=edit20261024b';
 
 const $=s=>document.querySelector(s),body=document.body,sidebar=$('.sidebar'),stage=$('.stage'),nav=$('.topbar nav');
 sidebar.id='studio-sidebar';

@@ -58,7 +58,7 @@ export function mountVisitorMobileUI({canWalk,onJoystick,onStop,closePanel}){
  nav.id='visitor-nav';
  [['about-button','info','소개'],['people-button','people','구성원'],['album-button','image','앨범'],['pc-button','monitor','PC']].forEach(([id,icon,label])=>decorate(document.getElementById(id),icon,label));
  const studioLink=nav.querySelector('.studio-link'),studioHref=studioLink.getAttribute('href');
- decorate(studioLink,'edit','공간 편집 · PC 전용');
+ decorate(studioLink,'edit','편집 · PC 전용');
  const syncStudioAccess=()=>{
   const disabled=compactUI();
   studioLink.setAttribute('aria-disabled',String(disabled));

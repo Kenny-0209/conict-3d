@@ -15,7 +15,7 @@ import {createPCMotion,isWorking} from './pc-motion.js';
 import {mountPCPanel} from './pc-panel.js';
 import {walkingAction,movementDirection,turnYaw} from './movement.js';
 import {analogMovementDirection} from './mobile-core.js';
-import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=edit20261024';
+import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=edit20261024b';
 import {official,albums,photos,records,galleryFallback,tourStops,pageLinks} from './content.js?v=orbit20261018';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
