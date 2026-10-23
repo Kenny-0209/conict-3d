@@ -1,0 +1,136 @@
+/* Touch UI is selected by viewport size and pointer capability, including rotation. */
+.mobile-only,.compact-label{display:none}
+.ui-icon{width:22px;height:22px;flex-shrink:0;vertical-align:middle;pointer-events:none}
+.topbar nav button>.ui-icon,.studio-link>.ui-icon,#tour-toggle>.ui-icon,.view-switch button>.ui-icon,#help-button>.ui-icon,#enter-button>.ui-icon,.look-pad button>.ui-icon,.door-tag>.ui-icon{display:none}
+.tour-toggle>.desktop-label{display:contents;font-size:inherit;line-height:inherit;transform:none!important}
+.primary>.desktop-label{font-size:inherit}
+html[data-ui=compact] body{overflow:hidden;overscroll-behavior:none}
+html[data-ui=compact] #house{height:100dvh;min-height:0}
+html[data-ui=compact] button,html[data-ui=compact] a{touch-action:manipulation}
+html[data-ui=compact] .mobile-only{display:flex}
+html[data-ui=compact] .topbar{z-index:25;padding:max(10px,env(safe-area-inset-top)) 12px 8px;align-items:center;gap:10px;background:none}
+html[data-ui=compact] .brand{font-size:18px;gap:7px;min-height:44px}
+html[data-ui=compact] .brand-mark{font-size:27px}
+html[data-ui=compact] .brand small{display:none}
+html[data-ui=compact] .icon-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;flex-shrink:0;border:1px solid #cbd6c7;background:#faf8eff2;border-radius:14px;box-shadow:0 4px 16px #17362612}
+html[data-ui=compact] #mobile-menu{margin-left:auto;pointer-events:auto}
+html[data-ui=compact] .topbar nav{display:none;position:absolute;right:12px;top:calc(64px + env(safe-area-inset-top));width:min(310px,calc(100vw - 24px));max-width:none;grid-template-columns:1fr 1fr;gap:6px;padding:10px;border:1px solid #d3ddce;background:#fcfaf2f7;border-radius:18px;box-shadow:0 14px 40px #17382629;backdrop-filter:blur(18px)}
+html[data-ui=compact] .menu-open .topbar nav{display:grid}
+html[data-ui=compact] .topbar nav button,html[data-ui=compact] .studio-link{display:flex;align-items:center;justify-content:flex-start;gap:10px;min-height:48px;padding:10px;border:0;border-radius:10px;font-size:12px;color:var(--ink)}
+html[data-ui=compact] .topbar nav button:active,html[data-ui=compact] .studio-link:active{background:#e5edde}
+html[data-ui=compact] .topbar nav .desktop-label,html[data-ui=compact] #tour-toggle>.desktop-label,html[data-ui=compact] .view-switch .desktop-label,html[data-ui=compact] #help-button>.desktop-label,html[data-ui=compact] #enter-button>.desktop-label,html[data-ui=compact] .look-pad .desktop-label{display:none}
+html[data-ui=compact] .compact-label{display:inline}
+html[data-ui=compact] .topbar nav .ui-icon,html[data-ui=compact] #tour-toggle>.ui-icon,html[data-ui=compact] .view-switch .ui-icon,html[data-ui=compact] #help-button>.ui-icon,html[data-ui=compact] #enter-button>.ui-icon,html[data-ui=compact] .look-pad .ui-icon{display:block}
+html[data-ui=compact] .weather-strip{left:12px;top:calc(65px + env(safe-area-inset-top));max-width:calc(100% - 24px);z-index:12}
+html[data-ui=compact] .weather-toggle{min-height:36px;padding:7px 11px;gap:8px;font-size:10px}
+html[data-ui=compact] .weather-place{display:none}
+html[data-ui=compact] .weather-details{max-width:calc(100vw - 24px)}
+html[data-ui=compact] .walking .weather-strip,html[data-ui=compact] body:has(#panel[open]) .weather-strip{visibility:hidden}
+html[data-ui=compact] .welcome{left:12px;right:12px;top:auto;bottom:calc(84px + env(safe-area-inset-bottom));padding:17px 18px;background:#faf8eff2;border:1px solid #d2dccb;border-radius:20px;backdrop-filter:blur(16px);box-shadow:0 10px 35px #19382a1c;pointer-events:auto}
+html[data-ui=compact] .welcome>.eyebrow,html[data-ui=compact] .welcome>p,html[data-ui=compact] .welcome-foot{display:none}
+html[data-ui=compact] .welcome h1{font-size:24px!important;line-height:1.3;letter-spacing:-1px;color:var(--ink);margin:0 44px 12px 0}
+html[data-ui=compact] .welcome .primary{height:44px;padding:10px 16px;gap:9px;font-size:13px;border-radius:12px}
+html[data-ui=compact] .welcome .primary .ui-icon{width:19px;height:19px}
+html[data-ui=compact] .panel-fold{align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;border:1px solid #d4ddcf;border-radius:12px;background:#f5f5eccc;padding:10px;touch-action:manipulation}
+html[data-ui=compact] #welcome-fold{position:absolute;right:10px;top:10px}
+html[data-ui=compact] .welcome .welcome-summary{display:none;font-size:12px;font-weight:700;letter-spacing:.7px;min-height:28px;align-items:center;color:var(--ink)}
+html[data-ui=compact] .welcome.is-collapsed{padding:13px 62px 13px 17px;min-height:60px}
+html[data-ui=compact] .welcome.is-collapsed h1,html[data-ui=compact] .welcome.is-collapsed .primary{display:none}
+html[data-ui=compact] .welcome.is-collapsed .welcome-summary{display:flex}
+html[data-ui=compact] .is-collapsed .panel-fold .ui-icon{transform:rotate(180deg)}
+html[data-ui=compact] .experience-bar{left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:4px;padding:6px;border:1px solid #d0dac8;border-radius:20px;background:#f9f7eef5;backdrop-filter:blur(18px);box-shadow:0 6px 30px #1a392727;pointer-events:auto;min-height:58px;z-index:22}
+html[data-ui=compact] .walking .experience-bar{grid-template-columns:44px minmax(0,1fr) 44px 44px}
+html[data-ui=compact] .experience-bar>*{order:0;margin:0}
+html[data-ui=compact] .tour-toggle{width:44px;min-width:0;height:44px;justify-content:center;padding:10px;border:0;border-radius:13px;background:none;box-shadow:none}
+html[data-ui=compact] .tour-toggle[aria-expanded=true]{background:#dce7d4}
+html[data-ui=compact] .tour-toggle .ui-icon{transform:none}
+html[data-ui=compact] .view-switch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:auto;padding:2px;border:0;background:#e8eddf;box-shadow:none;gap:2px;border-radius:15px}
+html[data-ui=compact] .view-switch button{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 0;border-radius:12px;min-width:0;color:#576e5a}
+html[data-ui=compact] .view-switch button[aria-pressed=true]{color:#fff8e8}
+html[data-ui=compact] #help-button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:none;border-radius:13px}
+html[data-ui=compact] #controls-toggle{border:0;box-shadow:none;background:#e8eddf}
+html[data-ui=compact] #controls-toggle[aria-expanded=false]{opacity:.6;background:none}
+html[data-ui=compact] #house:not(.walking) #controls-toggle{display:none}
+html[data-ui=compact] .tour-menu{left:0;bottom:calc(100% + 16px);width:min(320px,calc(100vw - 36px));max-height:calc(100dvh - 160px);border-radius:17px;overscroll-behavior:contain;touch-action:pan-y}
+html[data-ui=compact] .menu-heading span{display:none}
+html[data-ui=compact] #tour-list button{min-height:48px;font-size:12px}
+html[data-ui=compact] .scene-note,html[data-ui=compact] #room-tags{display:none}
+html[data-ui=compact] .door-tag{width:44px;min-height:44px;padding:10px;border-radius:50%;display:grid;place-items:center;max-width:none;white-space:nowrap}
+html[data-ui=compact] .door-tag>.ui-icon{display:block}
+html[data-ui=compact] .door-tag>.desktop-label{display:none}
+html[data-ui=compact] .context-card{left:12px;right:12px;top:auto;bottom:calc(84px + env(safe-area-inset-bottom));width:auto;max-height:min(57dvh,380px);overflow:auto;padding:18px;border-radius:18px;overscroll-behavior:contain;touch-action:pan-y;z-index:19}
+html[data-ui=compact] .context-card .eyebrow{display:none}
+html[data-ui=compact] .context-card h2{font-size:17px;line-height:1.5;margin:3px 84px 10px 0}
+html[data-ui=compact] .context-card p{font-size:12px;line-height:1.7;margin:0 0 14px}
+html[data-ui=compact] .context-card .primary{min-height:44px;font-size:12px;border-radius:10px}
+html[data-ui=compact] .card-close{position:absolute;right:7px;top:8px;width:44px;height:44px;padding:0;margin:0;float:none}
+html[data-ui=compact] #tour-fold{position:absolute;right:54px;top:8px}
+html[data-ui=compact] .context-card .tour-progress{margin-top:8px;padding-top:5px}
+html[data-ui=compact] .tour-progress button{width:44px;height:44px;padding:10px;font-size:20px}
+html[data-ui=compact] .context-card.is-collapsed p,html[data-ui=compact] .context-card.is-collapsed>.primary{display:none}
+html[data-ui=compact] .context-card.is-collapsed{padding:12px 14px 4px}
+html[data-ui=compact] .context-card.is-collapsed h2{margin-top:7px;margin-bottom:13px}
+html[data-ui=compact] .walk-help,html[data-ui=compact] .walk-pad{display:none}
+html[data-ui=compact] .walk-location{left:12px;top:calc(66px + env(safe-area-inset-top));min-height:44px;max-width:calc(100% - 24px);padding:0 0 0 12px;border-radius:14px;gap:8px;font-size:11px}
+html[data-ui=compact] .walk-location small{display:none}
+html[data-ui=compact] #map-toggle{width:44px;height:44px;border:0;box-shadow:none;background:none;border-radius:12px}
+html[data-ui=compact] #map-toggle[aria-expanded=true]{background:#dce8d3}
+html[data-ui=compact] .minimap{top:calc(118px + env(safe-area-inset-top));right:12px;bottom:auto;width:145px;height:103px;z-index:15}
+html[data-ui=compact] .minimap:not(.is-expanded){display:none}
+html[data-ui=compact] .minimap svg{height:70px}
+html[data-ui=compact] #walk-stick{position:absolute;left:20px;bottom:calc(96px + env(safe-area-inset-bottom));width:112px;height:112px;z-index:15}
+html[data-ui=compact] #stick-pad{position:relative;width:112px;height:112px;border-radius:50%;border:1px solid #c6d4bd;background:#f6f5e9b8;backdrop-filter:blur(10px);box-shadow:inset 0 0 0 15px #f6f5e94d,0 5px 22px #172b281a;touch-action:none;user-select:none;-webkit-user-select:none}
+html[data-ui=compact] #stick-thumb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;color:#fff9e9;background:#365e4b;box-shadow:0 3px 10px #203d3130;pointer-events:none}
+html[data-ui=compact] #stick-pad.active{border-color:#6d926c;background:#e9eedbc9}
+html[data-ui=compact] .stick-directions{position:absolute;inset:1px;color:#71856b;font-size:20px;font-weight:400;pointer-events:none;text-align:center}
+html[data-ui=compact] .stick-directions i,html[data-ui=compact] .stick-directions b,html[data-ui=compact] .stick-directions em{position:absolute;font:inherit;font-style:normal}
+html[data-ui=compact] .stick-directions i{left:8px;top:43px}
+html[data-ui=compact] .stick-directions b{right:8px;top:43px}
+html[data-ui=compact] .stick-directions em{left:46px;bottom:2px}
+html[data-ui=compact] .look-pad{left:auto;right:18px;bottom:calc(111px + env(safe-area-inset-bottom));display:grid;grid-template-columns:46px 46px;gap:6px;z-index:15}
+html[data-ui=compact] .look-pad button{display:flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;padding:9px;background:#faf8efe8;touch-action:manipulation}
+html[data-ui=compact] .nearby{top:auto;bottom:calc(180px + env(safe-area-inset-bottom));left:auto;right:20px;transform:none;width:68px;min-height:64px;max-width:90px;border-radius:18px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;z-index:16}
+html[data-ui=compact] .nearby .action-label{font-size:10px;line-height:1.3}
+html[data-ui=compact] .controls-collapsed #walk-stick,html[data-ui=compact] .controls-collapsed .look-pad,html[data-ui=compact] .controls-collapsed .nearby,html[data-ui=compact] .controls-collapsed .minimap,html[data-ui=compact] .controls-collapsed .walk-location{display:none}
+html[data-ui=compact] .toast{bottom:calc(82px + env(safe-area-inset-bottom));font-size:11px;max-width:calc(100% - 32px);padding:10px 13px;border-radius:12px;z-index:35}
+html[data-ui=compact] #panel{position:fixed;inset:auto 12px calc(82px + env(safe-area-inset-bottom));margin:0;width:calc(100% - 24px);max-width:none;max-height:70dvh;padding:0;overflow:hidden;border-radius:20px;z-index:30;box-shadow:0 12px 60px #173d3038}
+html[data-ui=compact] #panel .panel-top{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;align-items:center;gap:4px;min-height:66px;margin:0;padding:9px 10px 5px 16px;touch-action:none}
+html[data-ui=compact] #panel .panel-top>#panel-kicker{display:none}
+html[data-ui=compact] #panel .panel-top>#panel-caption{display:block;font-size:13px;line-height:1.5;font-weight:700;letter-spacing:0;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[data-ui=compact] #panel .close{width:44px;height:44px;font-size:28px}
+html[data-ui=compact] #panel-body{padding:0 16px 18px;max-height:calc(70dvh - 72px);overflow:auto;overscroll-behavior:contain;touch-action:pan-y}
+html[data-ui=compact] #panel.is-collapsed{top:calc(69px + env(safe-area-inset-top));bottom:auto;max-height:64px}
+html[data-ui=compact] #panel.is-collapsed .panel-top{min-height:58px;padding-top:5px;padding-bottom:5px}
+html[data-ui=compact] #panel.is-collapsed #panel-body{display:none}
+html[data-ui=compact] #panel h2{font-size:21px;line-height:1.45;margin:6px 0 12px}
+html[data-ui=compact] #panel p{font-size:12px;overflow-wrap:anywhere}
+html[data-ui=compact] #panel .intro-grid{grid-template-columns:1fr;gap:12px}
+html[data-ui=compact] #panel .intro-grid img{height:145px}
+html[data-ui=compact] .dialog-actions>button{min-height:44px;font-size:12px;flex:1 1 auto}
+html[data-ui=compact] .people-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html[data-ui=compact] .person-card{min-width:0}
+html[data-ui=compact] .person-card img{height:95px}
+html[data-ui=compact] .album-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html[data-ui=compact] .album-tabs{gap:5px;margin:12px 0}
+html[data-ui=compact] .album-tabs button{min-height:44px;padding:8px 11px}
+html[data-ui=compact] .dialog-person{gap:12px}
+html[data-ui=compact] .dialog-person img{width:74px;height:95px}
+html[data-ui=compact] .personal-sections,html[data-ui=compact] .help-list{grid-template-columns:1fr}
+html[data-ui=compact] #panel input,html[data-ui=compact] #panel select{font-size:16px!important;min-height:44px;max-width:100%;box-sizing:border-box}
+html[data-ui=compact] #lightbox{width:calc(100% - 16px);padding:8px;border-radius:14px;max-height:92dvh}
+html[data-ui=compact] #lightbox>.close{width:44px;height:44px;right:12px;top:12px}
+html[data-ui=compact] #photo-large{max-height:calc(100dvh - 170px)}
+html[data-ui=compact] .photo-footer button{min-width:44px;min-height:44px}
+@media(orientation:landscape) and (max-height:540px){
+ html[data-ui=compact] .welcome{right:auto;left:12px;width:265px;max-width:40vw;padding:14px;bottom:82px}
+ html[data-ui=compact] .welcome h1{font-size:20px!important;margin-right:34px}
+ html[data-ui=compact] .welcome.is-collapsed{min-height:58px}
+ html[data-ui=compact] .experience-bar{left:calc(50% - 168px);right:auto;width:336px}
+ html[data-ui=compact] .context-card{left:auto;right:12px;width:min(340px,45vw);max-height:calc(100dvh - 100px);bottom:82px;padding:14px}
+ html[data-ui=compact] #panel{left:auto;right:12px;width:min(400px,53vw);max-height:calc(100dvh - 30px);bottom:15px}
+ html[data-ui=compact] #panel-body{max-height:calc(100dvh - 102px)}
+ html[data-ui=compact] #panel.is-collapsed{top:69px;bottom:auto}
+ html[data-ui=compact] #walk-stick{bottom:30px}
+ html[data-ui=compact] .look-pad{bottom:42px}
+ html[data-ui=compact] .nearby{bottom:112px}
+}

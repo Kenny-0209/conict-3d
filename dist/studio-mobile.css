@@ -1,0 +1,92 @@
+.studio-mobile-only{display:none}
+.ui-icon{width:22px;height:22px;pointer-events:none;vertical-align:middle;flex-shrink:0}
+.topbar nav button>.ui-icon,.home-return>.ui-icon,#plan-fit>.ui-icon,#plan-expand>.ui-icon{display:none}
+html[data-ui=compact] body{height:100dvh;overflow:hidden;overscroll-behavior:none}
+html[data-ui=compact] .studio-mobile-only{display:flex}
+html[data-ui=compact] .topbar{height:60px;padding:8px 12px;display:flex;align-items:center;gap:8px;position:relative;z-index:35;background:#f8f6ed;border-bottom:1px solid #d6dece}
+html[data-ui=compact] .brand{font-size:15px;gap:5px;min-height:44px}
+html[data-ui=compact] .brand-symbol{font-size:24px}
+html[data-ui=compact] .brand-sub,html[data-ui=compact] .top-note{display:none}
+html[data-ui=compact] .home-return{margin:0 0 0 auto!important;display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border:1px solid #d0d9c8;border-radius:12px}
+html[data-ui=compact] .home-return>.ui-icon{display:block}
+html[data-ui=compact] .home-return>.studio-desktop-label{display:none}
+html[data-ui=compact] #studio-mobile-tools{display:flex;gap:4px}
+html[data-ui=compact] #studio-mobile-tools>button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #d0d9c8;border-radius:12px;background:#f0f1e6;touch-action:manipulation}
+html[data-ui=compact] #studio-mobile-tools>button[aria-expanded=true]{background:#315b47;color:#fff8e8}
+html[data-ui=compact] body:not([data-studio-tab=edit]) #studio-plan-toggle{display:none}
+html[data-ui=compact] .topbar nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));height:58px;margin:0;padding:6px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;z-index:40;border:1px solid #cbd6c3;border-radius:18px;background:#faf8eff5;backdrop-filter:blur(14px);box-shadow:0 5px 25px #25443124}
+html[data-ui=compact] .topbar nav button{border:0;border-radius:12px;min-height:44px;padding:10px;display:flex;align-items:center;justify-content:center}
+html[data-ui=compact] .topbar nav button.active{background:#315b47;color:#fff8e8}
+html[data-ui=compact] .topbar nav button>.ui-icon{display:block}
+html[data-ui=compact] .topbar nav .studio-desktop-label{display:none}
+html[data-ui=compact] main{height:calc(100dvh - 60px);min-height:0;display:block;position:relative}
+html[data-ui=compact] .stage,html[data-ui=compact] .stage.editing{height:100%;min-height:0;width:100%;overflow:hidden}
+html[data-ui=compact] #viewport,html[data-ui=compact] .stage.editing #viewport{position:absolute;inset:0;touch-action:none}
+html[data-ui=compact] .sidebar{display:none;position:fixed;top:70px;left:12px;right:12px;bottom:auto;width:auto;max-height:calc(100dvh - 155px);overflow:auto;padding:16px;border:1px solid #d0d9c8;border-radius:18px;background:#faf8eff8;backdrop-filter:blur(16px);z-index:28;box-shadow:0 10px 45px #1d3b252b;overscroll-behavior:contain;touch-action:pan-y}
+html[data-ui=compact] .studio-sidebar-open .sidebar{display:block}
+html[data-ui=compact] #studio-sidebar-close{position:sticky;top:0;float:right;align-items:center;justify-content:center;width:44px;height:44px;margin:-6px -6px 0 0;background:#eef1e5;border:1px solid #ccd8c2;border-radius:12px;z-index:2}
+html[data-ui=compact] .sidebar h1{font-size:21px;margin:6px 48px 12px 0}
+html[data-ui=compact] .sidebar .intro,html[data-ui=compact] .sidebar>.eyebrow,html[data-ui=compact] .sidebar-foot{display:none}
+html[data-ui=compact] .sidebar .mode-switch{width:calc(100% - 48px)}
+html[data-ui=compact] .sidebar button,html[data-ui=compact] .sidebar select,html[data-ui=compact] .sidebar input{min-height:44px;touch-action:manipulation}
+html[data-ui=compact] .sidebar select,html[data-ui=compact] .sidebar input,html[data-ui=compact] dialog input,html[data-ui=compact] dialog select{font-size:16px}
+html[data-ui=compact] .seat-list,html[data-ui=compact] .people-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html[data-ui=compact] .seat-item,html[data-ui=compact] .person-item{font-size:12px;min-height:48px}
+html[data-ui=compact] .person-item .person-name{font-size:12px}
+html[data-ui=compact] .person-item .person-role{font-size:9px}
+html[data-ui=compact] .object-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+html[data-ui=compact] .object-item{font-size:11px;padding:10px}
+html[data-ui=compact] .stage-top{left:12px;right:12px;top:10px;pointer-events:none;z-index:9}
+html[data-ui=compact] .stage-top>div:first-child{display:none}
+html[data-ui=compact] .stage-actions{margin-left:auto;gap:5px;pointer-events:auto}
+html[data-ui=compact] .stage-actions button{width:44px;height:44px;border-radius:12px;background:#faf8efe8;border:1px solid #cfd9c6;font-size:20px}
+html[data-ui=compact] .stage-bottom{display:none;position:fixed;inset:70px 12px auto auto;padding:10px;z-index:29;background:#faf8eff5;border:1px solid #d0d9c8;border-radius:16px;box-shadow:0 8px 30px #25443124}
+html[data-ui=compact] .studio-export-open .stage-bottom{display:block}
+html[data-ui=compact] .stage-bottom .gesture{display:none}
+html[data-ui=compact] .export-actions{display:flex;flex-direction:column;gap:6px;max-width:220px}
+html[data-ui=compact] .export-actions button{min-height:44px;padding:10px 18px;font-size:12px}
+html[data-ui=compact] .statusbar,html[data-ui=compact] .room-tag{display:none}
+html[data-ui=compact] .detail{position:fixed;top:auto;left:12px;right:12px;bottom:82px;width:auto;max-height:43dvh;overflow:auto;padding:14px;border-radius:16px;z-index:18;touch-action:pan-y;overscroll-behavior:contain}
+html[data-ui=compact] .detail .detail-top{display:flex;align-items:center;gap:10px;min-height:44px;padding:0}
+html[data-ui=compact] .detail .detail-top>span{display:none}
+html[data-ui=compact] .studio-detail-caption{font-size:13px;flex:1;color:#315b47}
+html[data-ui=compact] .studio-detail-fold{margin-left:auto;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;border:1px solid #cdd7c5;padding:10px}
+html[data-ui=compact] .detail.is-collapsed>:not(.detail-top){display:none}
+html[data-ui=compact] .detail.is-collapsed{padding:5px 12px;max-height:60px}
+html[data-ui=compact] .detail.is-collapsed .ui-icon{transform:rotate(180deg)}
+html[data-ui=compact] .detail button{min-height:44px;font-size:12px;padding:9px}
+html[data-ui=compact] .detail h2{font-size:18px}
+html[data-ui=compact] .detail p,html[data-ui=compact] .detail .size{font-size:11px}
+html[data-ui=compact] .detail img{max-height:100px;object-fit:contain}
+html[data-ui=compact] .plan-panel,html[data-ui=compact] .stage.editing .plan-panel{display:none;position:fixed;top:70px;left:12px;right:12px;bottom:auto;height:min(66dvh,540px);max-height:calc(100dvh - 152px);overflow:auto;z-index:25;border-radius:18px;box-shadow:0 10px 45px #1d3b252b}
+html[data-ui=compact] .studio-plan-open .plan-panel:not([hidden]){display:flex;flex-direction:column}
+html[data-ui=compact] .stage.plan-expanded .plan-panel{height:calc(100dvh - 152px)}
+html[data-ui=compact] .plan-head{padding:8px 10px;flex-shrink:0;gap:6px}
+html[data-ui=compact] .plan-head>span{font-size:12px}
+html[data-ui=compact] .plan-head small{display:none}
+html[data-ui=compact] .plan-head>div{display:flex;flex-direction:row;gap:3px}
+html[data-ui=compact] .plan-head button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:10px;border-radius:10px}
+html[data-ui=compact] #plan-fit>.ui-icon,html[data-ui=compact] #plan-expand>.ui-icon{display:block}
+html[data-ui=compact] .plan-head .studio-desktop-label{display:none}
+html[data-ui=compact] .plan-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:8px;flex-shrink:0}
+html[data-ui=compact] .plan-tools button{min-height:44px;min-width:0;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:9px}
+html[data-ui=compact] .plan-tools .studio-desktop-label{display:none}
+html[data-ui=compact] .plan-options{padding:5px 10px;gap:8px;font-size:10px;flex-shrink:0}
+html[data-ui=compact] .plan-options label{min-height:34px;display:flex;align-items:center;gap:4px}
+html[data-ui=compact] .plan-options .wall-badge{display:none}
+html[data-ui=compact] #plan-svg{min-height:180px;height:220px;flex:1 0 180px;touch-action:none}
+html[data-ui=compact] .plan-hint{display:none}
+html[data-ui=compact] .plan-save{padding:8px;flex-shrink:0}
+html[data-ui=compact] .plan-save button{min-height:44px;font-size:11px;border-radius:9px}
+html[data-ui=compact] .prop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html[data-ui=compact] .prop-field span{font-size:11px}
+html[data-ui=compact] .sidebar:has(#edit-panel:not([hidden])){max-height:calc(100dvh - 155px)}
+html[data-ui=compact] dialog{width:calc(100% - 24px);max-height:85dvh;overflow:auto;padding:18px;border-radius:18px}
+html[data-ui=compact] dialog button{min-height:44px}
+html[data-ui=compact] .toast{bottom:86px;font-size:12px;max-width:calc(100% - 32px)}
+@media(orientation:landscape) and (max-height:540px){
+ html[data-ui=compact] .sidebar{left:12px;right:auto;width:310px;max-width:46vw}
+ html[data-ui=compact] .topbar nav{left:calc(50% - 160px);right:auto;width:320px}
+ html[data-ui=compact] .detail{left:auto;width:300px;max-width:44vw;max-height:60dvh}
+ html[data-ui=compact] .plan-panel,html[data-ui=compact] .stage.editing .plan-panel{right:auto;width:52vw;max-height:calc(100dvh - 90px);height:calc(100dvh - 90px)}
+}

@@ -7,6 +7,7 @@ import {members,seats as originalSeats,furniture,demoStates,SEAT_REVISION} from 
 import {loadLayout,validateLayout,planBounds,roomBounds} from './layout.js';
 import {createEditor} from './editor.js';
 import {seatView} from './camera.js';
+import {compactUI} from './mobile-ui.js';
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let seats=structuredClone(originalSeats),mode='polygon',tab='space',selected=furniture[0],person=members[0],seated=false,walking=false,states={...demoStates},source='demo',wire=false,model,focus='all',pollTimer,observations,selectedSeat;
@@ -16,13 +17,13 @@ try{readSeatAssignments()}catch{}
 const container=$('#viewport'), scene=new T.Scene();scene.background=new T.Color('#e7ecdf');
 let renderer;
 try{renderer=new T.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true,powerPreference:'low-power'})}catch(e){$('#loading').innerHTML='이 브라우저에서 3D 화면을 열 수 없습니다.<br>WebGL을 지원하는 브라우저에서 다시 열어 주세요.';throw e}
-renderer.localClippingEnabled=true;renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.shadowMap.enabled=false;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.10;container.append(renderer.domElement);
+renderer.localClippingEnabled=true;renderer.setPixelRatio(Math.min(devicePixelRatio,compactUI()?1:1.25));renderer.shadowMap.enabled=false;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.10;container.append(renderer.domElement);
 const camera=new T.PerspectiveCamera(34,1,.03,1200),controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.07;controls.maxPolarAngle=Math.PI*.49;controls.minDistance=.55;controls.maxDistance=900;controls.autoRotateSpeed=.35;controls.target.set(0,.3,1.4);controls.addEventListener('change',()=>dirty=true);window.addEventListener('lab-visual-change',()=>dirty=shadowDirty=true);renderer.domElement.addEventListener('webglcontextrestored',()=>dirty=shadowDirty=true);
 scene.add(new T.HemisphereLight('#fffaf1','#e8eee7',1.05));const sun=new T.DirectionalLight('#fffdf5',.65);sun.position.set(0,10,7);sun.castShadow=false;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:.5,far:32});sun.shadow.normalBias=.028;sun.shadow.bias=-.0001;scene.add(sun);scene.add(new T.AmbientLight('#fffdf4',1.85));
 const ground=new T.Mesh(new T.PlaneGeometry(200,200),new T.MeshStandardMaterial({color:'#e3e9db',roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.245;ground.receiveShadow=true;scene.add(ground);
 const grid=new T.GridHelper(80,80,'#dce4d3','#dce4d3');grid.position.y=-.24;grid.material.transparent=true;grid.material.opacity=.25;scene.add(grid);
 const ray=new T.Raycaster();let down,transition;
-function resize(){dirty=true;const w=container.clientWidth,h=container.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+function resize(){dirty=true;const w=container.clientWidth,h=container.clientHeight;renderer.setPixelRatio(Math.min(devicePixelRatio,compactUI()?1:1.25));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(container);
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,4200)}
 function dispose(obj){const geos=new Set(),mats=new Set(),textures=new Set();obj.traverse(n=>{if(n.geometry)geos.add(n.geometry);for(let m of (Array.isArray(n.material)?n.material:[n.material]).filter(Boolean)){mats.add(m);if(m.map)textures.add(m.map)}});geos.forEach(g=>g.dispose());mats.forEach(m=>m.dispose());textures.forEach(t=>t.dispose())}
