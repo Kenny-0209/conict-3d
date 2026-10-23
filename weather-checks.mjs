@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import * as T from './dist/vendor/three.module.js';
+import {normalizeWeather,weatherKind,daylightAt,seoulMinutes,createWeatherClient,MAX_WEATHER_AGE} from './dist/weather-data.js';
+import {createAtmosphere} from './dist/weather-scene.js';
+import {defaultLayout,contains} from './dist/layout.js';
+const now=Date.parse('2026-10-15T03:00:00Z');
+const raw={timezone:'Asia/Seoul',current:{time:now/1000,temperature_2m:12,weather_code:63,rain:1,snowfall:0,precipitation:1,cloud_cover:95,wind_speed_10m:2,wind_direction_10m:90},daily:{time:[Date.parse('2026-10-14T15:00:00Z')/1000],sunrise:[Date.parse('2026-10-14T21:30:00Z')/1000],sunset:[Date.parse('2026-10-15T09:00:00Z')/1000]}};
+const wx=normalizeWeather(raw,now);assert.equal(wx.kind,'rain');assert.equal(wx.temperature,12);assert.equal(seoulMinutes(new Date(now)),720);
+assert.equal(daylightAt(new Date(now),wx).phase,'day');assert.equal(daylightAt(new Date('2026-10-14T19:00:00Z'),wx).phase,'night');
+assert(daylightAt(new Date('2026-10-14T21:30:00Z'),wx).level>.4);assert(daylightAt(new Date('2026-10-15T09:00:00Z'),wx).level<.6);
+for(const code of [71,73,75,77,85,86])assert.equal(weatherKind(code).kind,'snow');for(const code of [51,53,55,56,57,61,63,65,66,67,80,81,82])assert.equal(weatherKind(code).kind,'rain');
+assert.equal(weatherKind(0).kind,'clear');assert.equal(weatherKind(3).kind,'cloudy');assert.equal(weatherKind(45).kind,'fog');assert.equal(weatherKind(95).kind,'storm');assert.equal(weatherKind(999).kind,'unknown');
+for(const bad of [null,{...raw,timezone:'UTC'},{...raw,error:true},{...raw,current:{...raw.current,time:(now-MAX_WEATHER_AGE-1)/1000}},{...raw,current:{...raw.current,time:(now+600001)/1000}},{...raw,current:{...raw.current,temperature_2m:NaN}}])assert.throws(()=>normalizeWeather(bad,now));
+let latest,fail=false,saved;const storage={getItem:()=>null,setItem:(key,value)=>saved=value};
+const client=createWeatherClient({onChange:value=>latest=value,clock:()=>now,storage,interval:100000,fetcher:async()=>{if(fail)throw new Error('offline');return {ok:true,json:async()=>raw}}});
+await new Promise(r=>setTimeout(r,10));assert.equal(latest.status,'live');assert(saved);fail=true;await client.refresh();assert.equal(latest.status,'cached');client.close();
+const offline=createWeatherClient({onChange:value=>latest=value,clock:()=>now,storage:{getItem:()=>null},interval:100000,fetcher:async()=>{throw new Error('offline')}});await new Promise(r=>setTimeout(r,10));assert.equal(latest.status,'unavailable');assert.equal(latest.data,null);offline.close();
+const scene=new T.Scene();scene.background=new T.Color();scene.fog=new T.Fog('#fff',45,100);const sun=new T.DirectionalLight(),hemisphere=new T.HemisphereLight(),ground=new T.Mesh(new T.PlaneGeometry(100,100),new T.MeshStandardMaterial()),layout=defaultLayout();
+let changes=0;const atmosphere=createAtmosphere({scene,renderer:{},sun,hemisphere,ground,layout,onInvalidate:()=>changes++});
+atmosphere.update({status:'live',data:wx},new Date(now),true);assert(atmosphere.tick(.033));const count=changes;atmosphere.update({status:'live',data:wx},new Date(now+500));assert.equal(changes,count,'same minute must not continually rebuild shadows');
+for(let frame=0;frame<100;frame++){atmosphere.tick(.033);for(const p of atmosphere.drops)assert(!layout.rooms.some(room=>contains(room.points,p)),'weather must stay outside rooms')}
+atmosphere.update({status:'live',data:{...wx,kind:'snow'}},new Date(now),true);assert(atmosphere.tick(.033));
+atmosphere.update({status:'live',data:{...wx,kind:'clear',cloud:10}},new Date(now),true);assert.equal(atmosphere.tick(.033),false,'clear weather preserves idle rendering');
+atmosphere.dispose();ground.geometry.dispose();ground.material.dispose();
+console.log('PASS: Seoul time, sunrise/sunset, WMO weather types, fresh/stale/future/error data, offline cache, outside-only rain and snow, idle rendering');

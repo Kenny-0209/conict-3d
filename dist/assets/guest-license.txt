@@ -1,0 +1,15 @@
+------------------------------------------------------
+Ultimate Modular Males by @Quaternius
+Consider supporting me on Patreon, even $1 helps me a lot!
+
+https://www.patreon.com/quaternius
+-------------------------------------------------------
+
+License:
+CC0 1.0 Universal (CC0 1.0) 
+Public Domain Dedication
+https://creativecommons.org/publicdomain/zero/1.0/
+
+
+Used asset: Casual_2.gltf. Source: https://quaternius.com/packs/ultimatemodularcharacters.html
+Web changes: retain Idle_Neutral / Walk / Wave animation data; convert to GLB. Runtime adapts height to 1.80m and adds seated pose.

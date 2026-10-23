@@ -1,0 +1,10 @@
+node_modules/
+.openai/
+.env
+.env.*
+*.local
+*.log
+*.tar.gz
+__pycache__/
+.DS_Store
+Thumbs.db
