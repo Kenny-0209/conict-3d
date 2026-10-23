@@ -19,6 +19,7 @@ html[data-ui=compact] .menu-open .topbar nav{display:grid}
 html[data-ui=compact] .menu-open .topbar{z-index:45}
 html[data-ui=compact] .topbar nav button,html[data-ui=compact] .studio-link{display:flex;align-items:center;justify-content:flex-start;gap:10px;min-height:48px;padding:10px;border:0;border-radius:10px;font-size:12px;color:var(--ink)}
 html[data-ui=compact] .topbar nav button:active,html[data-ui=compact] .studio-link:active{background:#e5edde}
+html[data-ui=compact] .studio-link[aria-disabled=true]{opacity:.45;cursor:not-allowed;background:transparent}
 html[data-ui=compact] .topbar nav .desktop-label,html[data-ui=compact] #tour-toggle>.desktop-label,html[data-ui=compact] .view-switch .desktop-label,html[data-ui=compact] #help-button>.desktop-label,html[data-ui=compact] #enter-button>.desktop-label,html[data-ui=compact] .look-pad .desktop-label{display:none}
 html[data-ui=compact] .compact-label{display:inline}
 html[data-ui=compact] .topbar nav .ui-icon,html[data-ui=compact] #tour-toggle>.ui-icon,html[data-ui=compact] .view-switch .ui-icon,html[data-ui=compact] #help-button>.ui-icon,html[data-ui=compact] #enter-button>.ui-icon,html[data-ui=compact] .look-pad .ui-icon{display:block}
