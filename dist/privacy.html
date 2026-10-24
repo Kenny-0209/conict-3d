@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>편지 개인정보 안내 · CONICT</title><link rel="stylesheet" href="./letter.css?v=privacy20261025"></head>
+<body><header class="letter-header"><a class="letter-brand" href="./index.html"><span aria-hidden="true">◈</span><b>CONICT<small>ARCHITECTURE ICT LAB</small></b></a><a class="letter-home" href="./letter.html">편지 쓰기 ↗</a></header>
+<main class="letter-policy-page"><span class="letter-eyebrow">YOUR LETTER, YOUR PRIVACY</span><h1>편지 개인정보 안내</h1><p>CONICT 건축 ICT연구실의 온라인 상담·문의·연구 참여 편지에 적용합니다.</p><div id="privacy-content"></div><noscript>안내를 읽으려면 JavaScript를 켜거나 conict526@gmail.com으로 문의해주세요.</noscript></main>
+<script type="module">
+import {privacyPolicy,collectionNotice,transferNotice,deletionNotice} from './letter-privacy.js?v=privacy20261025';
+document.querySelector('#privacy-content').innerHTML=`<p class="letter-policy-version">시행일 ${privacyPolicy.effectiveDate} · 버전 ${privacyPolicy.version}</p><h2>개인정보 수집·이용</h2>${collectionNotice()}<h2>개인정보 국외 이전·업무 처리</h2>${transferNotice()}${deletionNotice()}`;
+</script></body></html>
