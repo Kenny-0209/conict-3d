@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>구름 표현 검증 · 건축 ICT연구실</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px 'Malgun Gothic',sans-serif;color:#253e4a;background:#dce7ee}canvas{display:block;width:100%;height:100dvh}header{position:fixed;top:28px;left:32px;max-width:420px}h1{margin:8px 0;font-size:26px}p{line-height:1.7;margin:7px 0;font-size:13px}small{letter-spacing:2px;font-size:10px}footer{position:fixed;bottom:25px;left:32px;right:32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}button,a{border:1px solid #ffffff75;background:#f8faf4dc;border-radius:10px;color:#253e4a;padding:12px 18px;font:inherit;text-decoration:none;cursor:pointer}button.active{background:#294e60;color:#fff}#metric{margin-left:auto;font-size:12px;background:#f8faf4c9;padding:9px 13px;border-radius:8px}@media(max-width:760px){header{left:20px;top:20px;max-width:280px}h1{font-size:20px}footer{left:20px;right:20px;bottom:20px}button,a{padding:10px 13px;font-size:12px}#metric{margin-left:0}}
+</style>
+<canvas id="cloud-world" aria-label="부드러운 볼륨 구름 미리보기. 드래그로 시점을 바꿀 수 있습니다."></canvas>
+<header><small>CONICT · CLOUD STUDY</small><h1>빛을 머금은 구름</h1><p>가우시안 밀도를 합친 입체 구름.<br>드래그하면 구름의 옆과 아래를 볼 수 있습니다.</p><p>개발 검증 화면 · 아래 날씨는 가상 조건입니다.</p></header>
+<footer><button data-sky="day" class="active">낮 · 흐림</button><button data-sky="dusk">노을</button><button data-sky="night">밤</button><a href="./">연구실로 ↗</a><span id="metric"></span></footer>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+<script type="module">
+import * as T from './vendor/three.module.js';
+import {OrbitControls} from './vendor/OrbitControls.js';
+import {createClouds} from './clouds.js';
+const canvas=document.querySelector('canvas'),renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'}),scene=new T.Scene(),camera=new T.PerspectiveCamera(45,1,.1,150);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
+const field=createClouds({minX:-5,maxX:5,minZ:-3,maxZ:3},{compact:innerWidth<761});scene.add(field.root);
+const controls=new OrbitControls(camera,canvas);controls.target.set(-2,8,-12);controls.minDistance=5;controls.maxDistance=55;camera.position.set(7,9.8,12);controls.update();
+const conditions={day:{level:1,phase:'day',sky:'#c5d9e7'},dusk:{level:.4,phase:'dusk',sky:'#b28d8b'},night:{level:0,phase:'night',sky:'#172938'}};
+function setSky(id){const x=conditions[id];scene.background=new T.Color(x.sky);field.update({...x,coverage:.9,sky:scene.background});document.body.style.color=id==='night'?'#d8e4ed':'#253e4a';document.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.sky===id));render()}
+function render(){renderer.render(scene,camera);document.querySelector('#metric').textContent=renderer.info.render.calls+' draw calls · 720 KiB volume · '+(innerWidth<761?20:28)+' steps'}
+function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();render()}
+document.querySelectorAll('button').forEach(b=>b.onclick=()=>setSky(b.dataset.sky));controls.addEventListener('change',render);addEventListener('resize',resize);setSky('day');resize();
+addEventListener('pagehide',()=>{field.dispose();controls.dispose();renderer.dispose()});
+</script></html>
