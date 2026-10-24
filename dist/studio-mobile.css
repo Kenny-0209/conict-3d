@@ -14,7 +14,7 @@ html[data-ui=compact] #studio-mobile-tools{display:flex;gap:4px}
 html[data-ui=compact] #studio-mobile-tools>button{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #d0d9c8;border-radius:12px;background:#f0f1e6;touch-action:manipulation}
 html[data-ui=compact] #studio-mobile-tools>button[aria-expanded=true]{background:#315b47;color:#fff8e8}
 html[data-ui=compact] body:not([data-studio-tab=edit]) #studio-plan-toggle{display:none}
-html[data-ui=compact] .topbar nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));height:58px;margin:0;padding:6px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;z-index:40;border:1px solid #cbd6c3;border-radius:18px;background:#faf8eff5;backdrop-filter:blur(14px);box-shadow:0 5px 25px #25443124}
+html[data-ui=compact] .topbar nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));height:58px;margin:0;padding:6px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;z-index:40;border:1px solid #cbd6c3;border-radius:18px;background:#faf8eff5;backdrop-filter:blur(14px);box-shadow:0 5px 25px #25443124}
 html[data-ui=compact] .topbar nav button{border:0;border-radius:12px;min-height:44px;padding:10px;display:flex;align-items:center;justify-content:center}
 html[data-ui=compact] .topbar nav button.active{background:#315b47;color:#fff8e8}
 html[data-ui=compact] .topbar nav button:disabled{opacity:.35;cursor:not-allowed}

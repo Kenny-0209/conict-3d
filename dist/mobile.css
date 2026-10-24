@@ -146,7 +146,6 @@ html[data-ui=compact] .photo-footer button{min-width:44px;min-height:44px}
 #look-hint b{font:700 12px/1.1 system-ui,sans-serif;letter-spacing:3px;padding-left:3px}
 @keyframes look-hint-swipe{0%,100%{transform:translateX(-13px)}50%{transform:translateX(13px)}}
 @media(prefers-reduced-motion:reduce){.look-hint-finger{animation:none}}
-html[data-ui=desktop] #look-hint{display:none}
 html[data-ui=compact]{--safe-left:max(12px,env(safe-area-inset-left));--safe-right:max(12px,env(safe-area-inset-right))}
 html[data-ui=compact] .topbar{padding-left:var(--safe-left);padding-right:var(--safe-right)}
 html[data-ui=compact] .topbar nav{right:var(--safe-right)}

@@ -5,14 +5,14 @@
  <meta name="description" content="서울과학기술대학교 건축 ICT 연구실의 사진 기반 3D 공간 시안. 복셀과 폴리곤, 가구, 구성원을 둘러보세요.">
  <meta name="theme-color" content="#f5f4ef"><title>CONICT · 공간 편집 스튜디오</title>
  <link rel="stylesheet" href="style.css">
- <link rel="stylesheet" href="studio-mobile.css?v=edit20261024">
- <script type="module" src="./mobile-ui.js?v=walk20261024b"></script>
+ <link rel="stylesheet" href="studio-mobile.css?v=desktop20261024">
+ <script type="module" src="./mobile-ui.js?v=desktop20261024"></script>
  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
 <body>
  <header class="topbar">
   <a class="brand" href="#" aria-label="연구실 첫 화면"><span class="brand-symbol">▦</span><span>CONICT<span class="brand-sub">ARCHITECTURE ICT LAB</span></span></a>
-  <a class="home-return" href="./index.html" style="font-size:13px;color:#34564d;margin-left:auto;white-space:nowrap">오픈하우스 ↗</a><nav aria-label="주요 메뉴"><button data-tab="space" class="active">공간 둘러보기</button><button data-tab="edit">공간 편집</button><button data-tab="furniture">가구 라이브러리</button><button data-tab="people">CONICT 연구실</button><button data-tab="network">PC 연결</button></nav>
+  <a class="home-return" href="./index.html" style="font-size:13px;color:#34564d;margin-left:auto;white-space:nowrap">오픈하우스 ↗</a><nav aria-label="주요 메뉴"><button data-tab="space" class="active">공간 둘러보기</button><button data-tab="edit" hidden>공간 편집</button><button data-tab="furniture">가구 라이브러리</button><button data-tab="people">CONICT 연구실</button><button data-tab="network">PC 연결</button></nav>
   <span class="top-note"><span class="dot"></span> 사진 기반 3D 시안 <span class="date">2026.10.15</span></span>
  </header>
  <main>
@@ -77,6 +77,6 @@
   </section>
  </main>
  <dialog id="seat-dialog"><form method="dialog"><button class="dialog-close" aria-label="닫기">×</button></form><span class="eyebrow">DESK CONNECTION</span><h2 id="dialog-title">자리 설정</h2><p>사진만으로 확인되지 않은 자리를 연결해 주세요.</p><label for="assign-member">이 자리의 구성원</label><select id="assign-member"></select><label for="assign-state">시연용 PC 상태</label><select id="assign-state"><option value="online">응답 확인 · 작업 모습</option><option value="no-response">미응답 · 빈자리</option><option value="unknown">확인 불가</option></select><label for="assign-device">실제 PC 연결</label><select id="assign-device"><option value="">미지정</option></select><p class="small-note">PC 목록은 로컬 관찰기에서 확인됩니다. IP가 바뀌지 않도록 공유기에서 DHCP 예약을 권장합니다.</p><button id="save-seat" class="primary full">자리 설정 저장</button></dialog>
- <script type="module" src="app.js?v=walk20261024b"></script>
- <script type="module" src="studio-mobile.js?v=walk20261024b"></script>
+ <script type="module" src="app.js?v=desktop20261024"></script>
+ <script type="module" src="studio-mobile.js?v=desktop20261024"></script>
 </body></html>

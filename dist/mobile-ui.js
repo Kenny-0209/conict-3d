@@ -57,18 +57,7 @@ export function mountVisitorMobileUI({canWalk,onJoystick,onStop,closePanel}){
  const house=document.querySelector('#house'),panel=document.querySelector('#panel'),nav=document.querySelector('.topbar nav');
  nav.id='visitor-nav';
  [['about-button','info','소개'],['people-button','people','구성원'],['album-button','image','앨범'],['pc-button','monitor','PC']].forEach(([id,icon,label])=>decorate(document.getElementById(id),icon,label));
- const studioLink=nav.querySelector('.studio-link'),studioHref=studioLink.getAttribute('href');
- decorate(studioLink,'edit','편집 · PC 전용');
- const syncStudioAccess=()=>{
-  const disabled=compactUI();
-  studioLink.setAttribute('aria-disabled',String(disabled));
-  studioLink.setAttribute('aria-label',disabled?'공간 편집 · PC 전용':'공간 편집');
-  studioLink.title=disabled?'공간 편집은 PC에서 이용해 주세요.':'공간 편집';
-  if(disabled){studioLink.removeAttribute('href');studioLink.setAttribute('role','link');studioLink.tabIndex=-1}
-  else{studioLink.setAttribute('href',studioHref);studioLink.removeAttribute('role');studioLink.removeAttribute('tabindex')}
- };
- syncStudioAccess();
- studioLink.addEventListener('click',e=>{if(compactUI())e.preventDefault()});
+ nav.querySelector('.studio-link').hidden=true;
  decorate(document.querySelector('#tour-toggle'),'route');
  decorate(document.querySelector('[data-view="overview"]'),'overview');
  decorate(document.querySelector('[data-view="first"]'),'eye');
@@ -80,7 +69,7 @@ export function mountVisitorMobileUI({canWalk,onJoystick,onStop,closePanel}){
  house.append(lookHint);const seenLookHints=new Set();let lookHintFrame,lookHintAnimation;
  const hideLookHint=()=>{cancelAnimationFrame(lookHintFrame);lookHintAnimation?.cancel();lookHintAnimation=null;lookHint.hidden=true};
  const showLookHint=mode=>{
-  hideLookHint();if(!compactUI()||!['first','third'].includes(mode)||seenLookHints.has(mode))return;
+  hideLookHint();if(!['first','third'].includes(mode)||seenLookHints.has(mode))return;
   seenLookHints.add(mode);lookHint.dataset.view=mode;
   // Let the initial 3D camera frame paint before starting the one-second guide.
   lookHintFrame=requestAnimationFrame(()=>{lookHintFrame=requestAnimationFrame(()=>{
@@ -126,7 +115,7 @@ export function mountVisitorMobileUI({canWalk,onJoystick,onStop,closePanel}){
  tools.onclick=()=>{const hidden=house.classList.toggle('controls-collapsed');tools.setAttribute('aria-expanded',String(!hidden));tools.setAttribute('aria-label',hidden?'이동 조작 펼치기':'이동 조작 접기');resetStick();onStop()};
  document.querySelectorAll('[data-look]').forEach(b=>decorate(b,b.dataset.look==='left'?'turnLeft':'turnRight'));
  window.addEventListener('lab-device-change',()=>{
-  hideLookHint();syncStudioAccess();resetStick();onStop();setMenu(false);house.classList.remove('controls-collapsed');tools.setAttribute('aria-expanded','true');tools.setAttribute('aria-label','이동 조작 접기');
+  hideLookHint();resetStick();onStop();setMenu(false);house.classList.remove('controls-collapsed');tools.setAttribute('aria-expanded','true');tools.setAttribute('aria-label','이동 조작 접기');
   if(panel.open){const collapsed=panel.classList.contains('is-collapsed');panel.close();showResponsivePanel(panel);panel.classList.toggle('is-collapsed',compactUI()&&collapsed)}
   if(!compactUI()){panel.classList.remove('is-collapsed');welcome.classList.remove('is-collapsed');welcomeFold.setAttribute('aria-expanded','true');welcomeFold.setAttribute('aria-label','안내 접기')}
   syncPanelHeading(panel);
