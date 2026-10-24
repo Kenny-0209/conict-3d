@@ -1,6 +1,11 @@
 import {contains,allWalls,openingsOnWall,openingPosition,doorPassage,projectToWall,wallLength,planBounds,footprints} from './layout.js';
 
 export function localPoint(o,x,z){const a=o.rotation*Math.PI/180;return {x:o.x+Math.cos(a)*x*o.scaleX+Math.sin(a)*z*o.scaleZ,z:o.z-Math.sin(a)*x*o.scaleX+Math.cos(a)*z*o.scaleZ}}
+export function screenViewTarget(o){
+ if(!['media-tv','cat','tv','monitors'].includes(o.kind))return null;
+ const height=o.kind==='tv'?1.37:o.kind==='monitors'?1.15:1.45;
+ return {x:o.x,y:(o.y||0)+height*o.scaleY,z:o.z};
+}
 function rectangle(o,w,d,dx=0,dz=0){const c=localPoint(o,dx,dz);return {x:c.x,z:c.z,a:o.rotation*Math.PI/180,w:w*o.scaleX/2,d:d*o.scaleZ/2}}
 function insideBox(p,b,r){const dx=p.x-b.x,dz=p.z-b.z,x=Math.cos(b.a)*dx-Math.sin(b.a)*dz,z=Math.sin(b.a)*dx+Math.cos(b.a)*dz;return Math.abs(x)<b.w+r&&Math.abs(z)<b.d+r}
 
@@ -36,6 +41,15 @@ export function createNavigation(layout,radius=.14){
   const smooth=[];let anchor=start,j=0;while(j<list.length){let k=j;while(k+1<list.length&&clear(anchor,list[k+1]))k++;smooth.push(list[k]);anchor=list[k];j=k+1}return smooth;
  }
  function spawn(){const door=layout.openings.find(o=>o.id==='d2');if(door){const p=openingPosition(layout,door);if(p){for(const s of [1,-1]){const a=p.rotation*Math.PI/180,q={x:p.x+Math.sin(a)*.75*s,z:p.z+Math.cos(a)*.75*s};if(walkable(q))return q}}}for(const r of layout.rooms){const centre={x:r.points.reduce((s,p)=>s+p.x,0)/r.points.length,z:r.points.reduce((s,p)=>s+p.z,0)/r.points.length};const i=nearest(centre,20);if(i>=0)return at(i)}return null}
- function approach(o,start){const candidates=o.kind==='seat'?[localPoint(o,.74,.84),localPoint(o,-.74,.84),localPoint(o,0,1.26),localPoint(o,1.06,.2),localPoint(o,-1.06,.2),localPoint(o,1.06,-.2),localPoint(o,-1.06,-.2)]:['media-tv','cat'].includes(o.kind)?[localPoint(o,0,.75),localPoint(o,.65,.75),localPoint(o,-.65,.75)]:[localPoint(o,0,.75),localPoint(o,0,1.15),localPoint(o,0,-1.15),localPoint(o,1.35,0),localPoint(o,-1.35,0)];let best=null;for(const q of candidates){if(!walkable(q))continue;const route=path(start,q);if(!route)continue;const length=route.reduce((s,p,i)=>s+Math.hypot(p.x-(i?route[i-1]:start).x,p.z-(i?route[i-1]:start).z),0);if(!best||length<best.length)best={point:q,path:route,length}}return best}
+ function approach(o,start){
+  const screen=['media-tv','cat','tv','monitors'].includes(o.kind);
+  // Screens face local +Z. Prefer their centre; never route to the rear or side.
+  const groups=screen?[
+   [1.15,1.45,1.8,.85,.65].map(z=>localPoint(o,0,z)),
+   [[-.35,1.15],[.35,1.15],[-.5,1.5],[.5,1.5]].map(([x,z])=>localPoint(o,x,z))
+  ]:[o.kind==='seat'?[localPoint(o,.74,.84),localPoint(o,-.74,.84),localPoint(o,0,1.26),localPoint(o,1.06,.2),localPoint(o,-1.06,.2),localPoint(o,1.06,-.2),localPoint(o,-1.06,-.2)]:[localPoint(o,0,.75),localPoint(o,0,1.15),localPoint(o,0,-1.15),localPoint(o,1.35,0),localPoint(o,-1.35,0)]];
+  for(const candidates of groups){let best=null;for(const q of candidates){if(!walkable(q))continue;const route=path(start,q);if(!route)continue;const length=route.reduce((s,p,i)=>s+Math.hypot(p.x-(i?route[i-1]:start).x,p.z-(i?route[i-1]:start).z),0);if(!best||length<best.length)best={point:q,path:route,length}}if(best)return best}
+  return null;
+ }
  return {walkable,move,path,spawn,approach,clear,wallHit,floor,radius,bounds:b,setDynamicObstacle:fn=>{dynamicObstacle=fn}};
 }

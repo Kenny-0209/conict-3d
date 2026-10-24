@@ -7,7 +7,7 @@ import {room,kit} from './models.js';
 import {members,seats,furniture} from './data.js';
 import {loadLayout,contains,planBounds,openingPosition,footprints} from './layout.js?v=objects20261024';
 import {seatView} from './camera.js';
-import {createNavigation,localPoint} from './navigation.js';
+import {createNavigation,localPoint,screenViewTarget} from './navigation.js?v=viewfix20261024';
 import {createGuest} from './guest.js';
 import {createDoors} from './doors.js?v=objects20261024';
 import {createCeiling} from './ceiling.js';
@@ -15,7 +15,7 @@ import {createPCMotion,isWorking} from './pc-motion.js';
 import {mountPCPanel} from './pc-panel.js';
 import {walkingAction,movementDirection,turnYaw} from './movement.js';
 import {analogMovementDirection} from './mobile-core.js';
-import {thirdPersonView,facingScore} from './walk-view.js';
+import {thirdPersonView,facingScore} from './walk-view.js?v=viewfix20261024';
 import {createTargetOutline} from './target-outline.js';
 import {compactUI,uiIcon,panelBlocks,showResponsivePanel,syncPanelHeading,mountVisitorMobileUI} from './mobile-ui.js?v=desktop20261024';
 import {official,albums,photos,records,galleryFallback,tourStops,pageLinks} from './content.js?v=objects20261024';
@@ -55,9 +55,6 @@ const guest=createGuest();scene.add(guest.root);guest.root.visible=false;
 const targetOutline=createTargetOutline(scene,()=>dirty=true);
 const spawn=nav.spawn();let player=spawn||{x:centre.x,z:centre.z},yaw=-Math.PI*.35,pitch=0,mode='overview',path=[],pendingInteraction=null,tourIndex=-1,fly=null,entry=null,returnState=null,near=null,wave=null,phase=0,disposed=false;
 guest.root.position.set(player.x,0,player.z);let lastTime=performance.now(),toastTimer,hovered=null;
-const faded=new Set();
-function restoreOcclusion(){for(const node of faded)node.traverse(m=>{if(m.userData.cameraMaterial){const b=m.userData.cameraMaterial;Object.assign(m.material,{opacity:b.opacity,transparent:b.transparent,depthWrite:b.depthWrite})}});faded.clear()}
-function softenOcclusion(target,desired){restoreOcclusion();const delta=desired.clone().sub(target),d=delta.length();raycaster.set(target,delta.normalize());for(const h of raycaster.intersectObject(lab,true)){if(h.distance>d||h.object.userData.personSeat)continue;let n=h.object;while(n&&n!==lab&&!n.userData.layoutKind)n=n.parent;if(!n||!(["object","opening","wall"].includes(n.userData.layoutKind)))continue;faded.add(n)}for(const node of faded)node.traverse(m=>{if(!m.isMesh||m.userData.personSeat)return;if(!m.userData.cameraMaterial){m.material=m.material.clone();m.userData.cameraMaterial={opacity:m.material.opacity,transparent:m.material.transparent,depthWrite:m.material.depthWrite}}m.material.opacity=m.userData.cameraMaterial.opacity*.16;m.material.transparent=true;m.material.depthWrite=false})}
 const raycaster=new T.Raycaster(),mouse=new T.Vector2(),floorPlane=new T.Plane(V(0,1,0),0),walkInputs=new Map(),canvasPointers=new Set();let drag=null;
 function clearHover(){
  hovered=null;$('#hover-label').hidden=true;delete $('#hover-label').dataset.target;
@@ -81,7 +78,7 @@ function setMode(next){
  dirty=shadowDirty=true;lastWalkView=null;guestMoving=false;
  clearHover();canvas.style.cursor=next==='overview'?'grab':'default';
  if(entry)return;if(!spawn&&next!=='overview'){toast('현재 배치에 걸을 공간이 없어요. 공간 편집에서 통로를 확인해 주세요.');return}
- panel.close();restoreOcclusion();path=[];pendingInteraction=null;fly=null;walkInputs.clear();stickInput={forward:0,side:0};mobileUI?.resetStick();tourIndex=-1;$('#tour-card').hidden=true;setTourMenu(false);mode=next;ceiling.setFirstPerson(mode==='first');house.classList.toggle('inside',mode==='first');house.classList.toggle('walking',mode!=='overview');house.classList.remove('touring');$('#walk-hud').hidden=mode==='overview';guest.root.visible=mode==='third';controls.enabled=mode==='overview';camera.clearViewOffset();camera.fov=mode==='overview'?42:64;camera.updateProjectionMatrix();
+ panel.close();path=[];pendingInteraction=null;fly=null;walkInputs.clear();stickInput={forward:0,side:0};mobileUI?.resetStick();tourIndex=-1;$('#tour-card').hidden=true;setTourMenu(false);mode=next;ceiling.setFirstPerson(mode==='first');house.classList.toggle('inside',mode==='first');house.classList.toggle('walking',mode!=='overview');house.classList.remove('touring');$('#walk-hud').hidden=mode==='overview';guest.root.visible=mode==='third';controls.enabled=mode==='overview';camera.clearViewOffset();camera.fov=mode==='overview'?42:64;camera.updateProjectionMatrix();
  $$('[data-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===mode)));if(mode==='overview')overview();else{guest.pose(0);guest.gait(0,false);updateWalkCamera(true);canvas.focus();updateNearby()}
  mobileUI?.showLookHint(mode);if(mode==='overview')updateNearby();
 }
@@ -90,8 +87,13 @@ function updateWalkCamera(immediate=false){
  if(!immediate&&lastWalkView&&view.every((v,i)=>v===lastWalkView[i]))return false;
  lastWalkView=view;dirty=true;
  const eye=V(player.x,1.62,player.z),dir=V(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),Math.cos(yaw)*Math.cos(pitch));
- if(mode==='first'){restoreOcclusion();camera.position.copy(eye);camera.lookAt(eye.clone().add(dir));controls.target.copy(eye.clone().add(dir));return true}
- const viewFrame=thirdPersonView({...player,yaw,pitch,aspect:camera.aspect}),target=V(...viewFrame.target),desired=V(...viewFrame.position);if(camera.fov!==viewFrame.fov){camera.fov=viewFrame.fov;camera.updateProjectionMatrix()}softenOcclusion(target,desired);shadowDirty=true;camera.position.copy(desired);controls.target.copy(target);camera.lookAt(target);return true;
+ if(mode==='first'){camera.position.copy(eye);camera.lookAt(eye.clone().add(dir));controls.target.copy(eye.clone().add(dir));return true}
+ const viewFrame=thirdPersonView({...player,yaw,pitch,aspect:camera.aspect,isBlocked:cameraBlocked}),target=V(...viewFrame.target),desired=V(...viewFrame.position);if(camera.fov!==viewFrame.fov){camera.fov=viewFrame.fov;camera.updateProjectionMatrix()}shadowDirty=true;camera.position.copy(desired);controls.target.copy(target);camera.lookAt(target);return true;
+}
+function cameraBlocked(from,to){
+ const origin=V(...from),delta=V(...to).sub(origin),distance=delta.length();
+ raycaster.set(origin,delta.normalize());
+ return raycaster.intersectObjects(collideWalls,false).some(hit=>hit.distance<distance-.08);
 }
 function nearestInteractive(){
  let result=null,best=Infinity;
@@ -125,7 +127,7 @@ function updateNearby(){
 function walkTo(item,kind='object'){
  const target=nav.approach(item.o,player);if(!target){toast('이 자리까지 이어지는 통로가 좁아요. 다른 쪽에서 접근해 보세요.');return}path=target.path;pendingInteraction={item,kind};$('#tour-card').hidden=true;canvas.focus();if(!path.length)arrived();else toast(item.person?item.person.name+'의 자리로 걸어갑니다':item.o.name+' 앞으로 걸어갑니다');
 }
-function arrived(){const todo=pendingInteraction;pendingInteraction=null;if(!todo)return;const p=todo.item.o.kind==='seat'?localPoint(todo.item.o,0,.82):todo.item.o;yaw=Math.atan2(p.x-player.x,p.z-player.z);showObject(todo.item,todo.kind)}
+function arrived(){const todo=pendingInteraction;pendingInteraction=null;if(!todo)return;const screen=screenViewTarget(todo.item.o),p=screen||(todo.item.o.kind==='seat'?localPoint(todo.item.o,0,.82):todo.item.o);yaw=Math.atan2(p.x-player.x,p.z-player.z);if(screen)pitch=T.MathUtils.clamp(Math.atan2(screen.y-1.62,Math.hypot(p.x-player.x,p.z-player.z)),-.6,.55);showObject(todo.item,todo.kind)}
 function showObject(item,kind='object'){
  if(item.door){path=[];pendingInteraction=null;const changed=doors.toggle(item.o.id);if(changed)toast(item.o.name+(item.door.target===1?'을 열었어요.':'을 닫았어요.'));updateNearby();return}
  if(item.person){if(kind==='person')greet(item);else seatChoice(item);return}
@@ -164,7 +166,7 @@ function greet(item){
 }
 function seatChoice(item){const m=item.person;openPanel('AT THE DESK','<h2 id="panel-title">'+m.name+'의 자리</h2><p>'+visitorSeats.find(s=>s.id===item.o.seatId).label+' · '+m.role+'</p><p>인사를 건네거나, 잠시 의자에 앉아 컴퓨터 화면으로 들어가 보세요.</p><div class="dialog-actions"><button class="secondary" id="seat-greet">인사 건네기 👋</button><button class="primary" id="seat-enter">앉아서 컴퓨터 보기 ↗</button></div>');$('#seat-greet').onclick=()=>greet(item);$('#seat-enter').onclick=()=>{panel.close();enterComputer(item)}}
 function enterComputer(item){
- if(entry)return;restoreOcclusion();returnState={mode,player:{...player},yaw,pitch,position:camera.position.clone(),target:controls.target.clone(),fov:camera.fov};
+ if(entry)return;returnState={mode,player:{...player},yaw,pitch,position:camera.position.clone(),target:controls.target.clone(),fov:camera.fov};
  clearHover();targetOutline.set(null);mobileUI?.hideLookHint();house.classList.add('entering');setTourMenu(false);$('#tour-card').hidden=true;path=[];controls.enabled=false;camera.clearViewOffset();walkInputs.clear();
  const chair=localPoint(item.o,0,.82),eye=localPoint(item.o,0,.73),screen=localPoint(item.o,0,.075),target=localPoint(item.o,0,-.06),start=guest.root.position.clone();
  if(mode==='overview'){const approach=nav.approach(item.o,player);if(approach){player={...approach.point};guest.root.position.set(player.x,0,player.z)}}
