@@ -22,12 +22,13 @@ export function cloudVolume(variant=0){
   const detail=noise((px+.5)*16,(py+.5)*12,(pz+.5)*14,variant+9)*.7+noise((px+.5)*37,(py+.5)*29,(pz+.5)*31,variant+23)*.3;
   // Erosion breaks up the outline, with an airy boundary and a soft, level base.
   const edge=smooth(Math.min(.5-Math.abs(px),.5-Math.abs(py),.5-Math.abs(pz))/.07);
-  values[x+nx*(y+ny*z)]=clamp((density-.17-(1-detail)*.28)*1.8)*edge*smooth((py+.39)/.10);
+  values[x+nx*(y+ny*z)]=smooth((density-.25-(1-detail)*.25)/.28)*edge*smooth((py+.39)/.10);
  }
  const sample=(x,y,z)=>x<0||x>=nx||y<0||y>=ny||z<0||z>=nz?0:values[x+nx*(y+ny*z)];
  for(let z=0;z<nz;z++)for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
   const i=x+nx*(y+ny*z),shade=sample(x-2,y+3,z+1)*.7+sample(x-5,y+7,z+3)*.6+sample(x-9,y+12,z+5)*.45;
-  data[i*2]=Math.round(values[i]*255);data[i*2+1]=Math.round((.25+.75*Math.exp(-shade*1.3))*255);
+  const light=(.2+.8*smooth((y/(ny-1)-.25)/.50))*(.60+.40*Math.exp(-shade*1.3));
+  data[i*2]=Math.round(values[i]*255);data[i*2+1]=Math.round(light*255);
  }
  const texture=new T.Data3DTexture(data,nx,ny,nz);
  texture.format=T.RGFormat;texture.type=T.UnsignedByteType;texture.minFilter=texture.magFilter=T.LinearFilter;
@@ -107,7 +108,7 @@ export function createClouds(bounds,{compact=false}={}){
   for(let i=0;i<root.children.length;i++){
    root.children[i].visible=i<count;
    const u=materials[i].uniforms;
-   u.lightTint.value.set(level>.5?'#fffdf6':'#71899f');u.shadeTint.value.set(level>.5?'#8199b3':'#273f58');
+   u.lightTint.value.set(level>.5?'#fffdf6':'#71899f');u.shadeTint.value.set(level>.5?'#71859f':'#273f58');
    if(phase==='dawn'||phase==='dusk')u.lightTint.value.lerp(new T.Color('#f2c5a8'),.4);
    if(sky)u.skyTint.value.copy(sky);
    u.opacity.value=.62+level*.34;u.densityScale.value=12+amount*6+(wet?1:0);
