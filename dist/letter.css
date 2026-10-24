@@ -14,3 +14,8 @@
 @media(max-width:370px){.letter-card{padding:24px 19px}.letter-intro h2{font-size:26px}.letter-choices{grid-template-columns:1fr}.letter-header{padding-left:15px;padding-right:15px}.letter-review-row{grid-template-columns:75px minmax(0,1fr) 25px}.letter-actions{gap:5px}.letter-skip{max-width:80px;font-size:9px}.letter-next{gap:13px;padding:14px 15px}}
 @media(orientation:landscape) and (max-height:540px){.letter-header{padding:12px 24px}.letter-layout{display:block;max-width:720px;margin-top:0}.letter-aside{display:none}.letter-card{min-height:0;padding:25px 35px}.letter-intro{padding:0 0 10px}.letter-intro .letter-envelope{float:right;margin:20px 5px 0 20px}.letter-intro h2{font-size:27px;margin-bottom:12px}.letter-intro p{font-size:12px;margin-bottom:17px}.letter-intro>small{margin-top:12px}.letter-intro>.letter-next{max-width:330px}.letter-footer{margin:17px auto}.letter-question h2{font-size:24px}.letter-hint{margin-bottom:20px}}
 @media(prefers-reduced-motion:reduce){.letter-enter{animation:none}.letter-track i{transition:none}}
+
+/* Give every editable answer a full touch target. */
+.letter-answer-chip{min-height:44px}.letter-review-row{grid-template-columns:112px minmax(0,1fr) 44px}.letter-review-row button{min-width:44px;min-height:44px}
+@media(max-width:720px){.letter-review-row{grid-template-columns:80px minmax(0,1fr) 44px}}
+@media(max-width:370px){.letter-review-row{grid-template-columns:70px minmax(0,1fr) 44px}}

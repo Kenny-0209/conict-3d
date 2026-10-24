@@ -6,6 +6,7 @@ export const branchFields=['topic','date','time','question','motivation','resear
 const clean=value=>typeof value==='string'?value.trim():'';
 export function todayKST(now=new Date()){const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now).map(p=>[p.type,p.value]));return `${p.year}-${p.month}-${p.day}`}
 export function stepsFor(a){return ['name','studentId','grade','purpose',...(a.purpose==='counsel'?['topic','schedule']:a.purpose==='question'?['question']:a.purpose==='join'?['motivation','research']:[]),'email','review']}
+export function progressFor(current){return {name:10,studentId:20,grade:30,purpose:40,topic:56,motivation:56,schedule:72,question:72,research:72,email:86,review:100}[current]||0}
 export function setAnswer(a,key,value){if(key==='purpose'&&a.purpose!==value)for(const field of branchFields)delete a[field];a[key]=value;a.consent=false;return a}
 export function toggleResearch(selected,value){if(!researchAreas.includes(value))return selected;const next=selected.includes(value)?selected.filter(v=>v!==value):[...selected,value];return value==='아직 탐색 중이에요'&&next.includes(value)?[value]:next.filter(v=>v!=='아직 탐색 중이에요')}
 export function researchText(a){return (a.research||[]).map(v=>v==='직접 적을게요'?clean(a.researchOther):v).filter(Boolean).join(' · ')}

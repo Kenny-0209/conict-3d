@@ -2,3 +2,5 @@
 html[data-ui=compact] .letter-cta{right:max(12px,env(safe-area-inset-right));top:calc(66px + env(safe-area-inset-top));gap:7px;padding:10px 12px;border-radius:14px;min-height:44px;z-index:17;max-width:130px}html[data-ui=compact] .letter-cta>svg{width:21px;height:21px}html[data-ui=compact] .letter-cta b{font-size:10px}html[data-ui=compact] .letter-cta small,html[data-ui=compact] .letter-cta-arrow{display:none}html[data-ui=compact] .weather-strip,html[data-ui=compact] .walk-location{max-width:calc(100% - 150px)}html[data-ui=compact] .weather-toggle{max-width:100%;flex-wrap:wrap}html[data-ui=compact] .walking .letter-cta{top:calc(66px + env(safe-area-inset-top))}html[data-ui=compact] #house:has(.minimap.is-expanded) .letter-cta{visibility:hidden}
 @media(orientation:landscape) and (max-height:540px){html[data-ui=compact] .letter-cta{top:calc(65px + env(safe-area-inset-top))}}
 @media(prefers-reduced-motion:reduce){.letter-cta{transition:none}}
+
+html[data-ui=compact] .letter-cta-prefix{display:none}

@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
-import {purposes,timeSlots,researchAreas,todayKST,stepsFor,setAnswer,toggleResearch,validateField,mailPayload,sendLetter} from './dist/letter-core.js';
+import {purposes,timeSlots,researchAreas,todayKST,stepsFor,progressFor,setAnswer,toggleResearch,validateField,mailPayload,sendLetter} from './dist/letter-core.js';
 
 const today=todayKST(),base={name:'기능 테스트',studentId:'',grade:'3학년',email:'conict526@gmail.com',consent:true};
 assert.equal(todayKST(new Date('2026-10-24T15:01:00Z')),'2026-10-25','dates use Korea time');
 const samples={counsel:{...base,purpose:'counsel',topic:'자동 발송 기능 검증용 상담 예시입니다.',date:today,time:timeSlots[0]},question:{...base,purpose:'question',question:'자동 발송 기능 검증용 문의 예시입니다.'},join:{...base,purpose:'join',motivation:'자동 발송 기능 검증용 참여 예시입니다.',research:['로봇 학습','직접 적을게요'],researchOther:'사람과 협업하는 건설 로봇'}};
 for(const [purpose,a] of Object.entries(samples)){
+ const progress=stepsFor(a).map(progressFor);assert(progress.every((value,index)=>!index||value>progress[index-1]),'selecting a branch never moves progress backwards');
  assert(stepsFor(a).includes(purpose==='counsel'?'schedule':purpose==='join'?'research':'question'));
  for(const key of stepsFor(a))assert.equal(validateField(key,a),'',key);
  const payload=mailPayload(a);assert(payload.message.includes(a.name));assert.equal(payload.email,a.email);assert.equal(payload.유형,purposes[purpose].short);assert(!payload._subject.includes(a.name),'personal details stay out of the mail subject');
