@@ -4,7 +4,11 @@
 
 2026-10-23에 기존 개인 홈페이지와 분리된 별도 프로젝트로 만들었습니다. 현재 저장소는 공개이며 GitHub Pages의 독립 프로젝트 사이트로 배포합니다.
 
-웹사이트: https://kenny-0209.github.io/conict-3d/
+웹사이트: https://conict526-ai.github.io/conict-3d/
+
+2026-10-24에 저장소 소유권과 GitHub Pages 배포를 연구실 계정 conict526-ai로 이전했습니다. 저장소: https://github.com/conict526-ai/conict-3d .
+
+웹사이트로 바로 연결되는 QR: [PNG](dist/website-qr.png) · [SVG](dist/website-qr.svg). QR에는 저장소 페이지가 아닌 위 웹사이트 주소를 담았습니다.
 
 기본 소스 브랜치 codex/site-upload의 dist/ 변경은 .github/workflows/pages.yml을 통해 GitHub Pages에 배포됩니다.
 
