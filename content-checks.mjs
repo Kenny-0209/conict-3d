@@ -8,7 +8,7 @@ import {interactionType,introduction,researchIntroduction,memberProfiles,roomLab
 
 for(const member of members){
  assert(pageLinks[member.id]&&new URL(pageLinks[member.id]).protocol==='https:');
- assert(introduction(member).endsWith(member.name+'입니다.'));
+ if(memberProfiles[member.id].bio)assert.equal(introduction(member),memberProfiles[member.id].bio);else assert(introduction(member).endsWith(member.name+'입니다.'));
  assert(!introduction(member).includes('연구 분야'));
  assert(researchIntroduction(member).includes(memberProfiles[member.id].research));
 }
