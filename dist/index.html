@@ -7,6 +7,7 @@
 <script>function openStudio(){if(['#edit','#furniture','#people','#network'].includes(location.hash))location.replace('./studio.html'+location.hash)}addEventListener('hashchange',openStudio);openStudio();</script>
 <link rel="stylesheet" href="./visit.css?v=objects20261024">
 <link rel="stylesheet" href="./mobile.css?v=desktop20261024">
+<link rel="stylesheet" href="./letter-entry.css?v=20261025">
 <script type="module" src="./mobile-ui.js?v=desktop20261024"></script>
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
@@ -30,6 +31,7 @@
   <div class="welcome-foot"><span>서울과학기술대학교</span><b>건축 ICT연구실</b></div>
  </section>
  <div id="room-tags" aria-label="공간 안내"></div>
+ <a class="letter-cta" id="letter-button" href="./letter.html" aria-label="CONICT 연구실에 편지 쓰기 · 상담, 문의, 연구 참여"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6" stroke-linejoin="round"/></svg><span><b><span class="letter-cta-prefix">연구실에 </span>편지 쓰기</b><small>상담 · 질문 · 함께하는 연구</small></span><span class="letter-cta-arrow" aria-hidden="true">↗</span></a>
  <div id="door-tags" role="group" aria-label="문 열고 닫기"></div>
  <div id="hover-label" hidden></div>
  <aside id="tour-card" class="context-card" hidden aria-live="polite"></aside>
