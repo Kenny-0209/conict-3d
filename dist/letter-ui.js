@@ -1,5 +1,5 @@
 import {purposes,grades,timeSlots,researchAreas,todayKST,stepsFor,progressFor,setAnswer,toggleResearch,researchText,validateField,letterRows,configuredEndpoint,sendLetter} from './letter-core.js?v=letter20261025b';
-import {letterConfig} from './letter-config.js?v=20261025';
+import {letterConfig} from './letter-config.js?v=mail20261025';
 
 const view=document.querySelector('#letter-view'),history=document.querySelector('#letter-history'),progress=document.querySelector('#letter-progress');
 const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
