@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.js';
+import {createClouds} from './clouds.js';
 import {contains,planBounds} from './layout.js';
 import {LAB_LOCATION,MAX_WEATHER_AGE,daylightAt,seoulMinutes,createWeatherClient,weatherKind} from './weather-data.js';
 
@@ -19,10 +20,7 @@ export function createAtmosphere({scene,renderer,sun,hemisphere,ground,layout,on
  const sunOrb=new T.Mesh(new T.SphereGeometry(.30,16,10),new T.MeshBasicMaterial({color:'#ffdd97',fog:false}));sunOrb.position.set(bounds.maxX+4,9,bounds.minZ-4);root.add(sunOrb);
  const starPositions=[];for(let i=0;i<60;i++)starPositions.push(cx+(random()-.5)*50,10+random()*8,cz-8-random()*24);
  const starGeo=new T.BufferGeometry();starGeo.setAttribute('position',new T.Float32BufferAttribute(starPositions,3));const stars=new T.Points(starGeo,new T.PointsMaterial({color:'#edf5ff',size:.06,transparent:true,opacity:.65,depthWrite:false,fog:false}));root.add(stars);
- const cloudGroup=new T.Group();cloudGroup.name='Clouds outside rooms';root.add(cloudGroup);
- const cloudMat=new T.MeshStandardMaterial({color:'#e1e6e5',roughness:1,transparent:true,opacity:.7,depthWrite:false});
- const cloudGeo=new T.SphereGeometry(1,10,7);
- for(let i=0;i<5;i++){const cloud=new T.Group();cloud.position.set(cx+(i-2)*4,4.8+(i%2)*.5,bounds.minZ-9-(i%2)*2);for(let j=0;j<3;j++){const puff=new T.Mesh(cloudGeo,cloudMat);puff.position.set((j-1)*.72,Math.sin(j)*.16,0);puff.scale.set(.90,.34,.55);cloud.add(puff)}cloudGroup.add(cloud)}
+ const clouds=createClouds(bounds,{compact:!!globalThis.matchMedia?.('(max-width: 760px)').matches});root.add(clouds.root);
  const snowData=new Uint8Array(16*16*4);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const i=(y*16+x)*4,a=Math.max(0,1-Math.hypot((x-7.5)/7.5,(y-7.5)/7.5));snowData.set([255,255,255,Math.round(a*255)],i)}
  const snowTexture=new T.DataTexture(snowData,16,16,T.RGBAFormat);snowTexture.needsUpdate=true;
  const rainGeo=new T.BufferGeometry(),snowGeo=new T.BufferGeometry(),rainArray=new Float32Array(240*6),snowArray=new Float32Array(200*3);
@@ -44,7 +42,7 @@ export function createAtmosphere({scene,renderer,sun,hemisphere,ground,layout,on
   const angle=solar.progress*Math.PI;sun.position.set(cx+Math.cos(angle)*13,8+Math.sin(angle)*6,cz+8);sun.target.position.set(cx,0,cz);sun.target.updateMatrixWorld();sun.intensity=.30+level*.35*(1-cloud*.5);sun.color.set('#fffdf5');sun.castShadow=false;
   indoorFill.intensity=1.85;
   moon.visible=level<.35&&!wet;stars.visible=level<.25&&cloud<.55&&!wet;sunOrb.visible=level>.50&&cloud<.45&&!wet;
-  cloudGroup.visible=cloud>.25||wet;cloudMat.color.set(level>.5?'#afbfc9':'#728b9e');cloudMat.opacity=.28+cloud*.28;
+  clouds.update({coverage:cloud,level,wet,phase:solar.phase,sky});
   rain.material.color.set(level>.5?'#46647b':'#b9d0df');rain.material.opacity=level>.5?.72:.5;
   rain.visible=['rain','storm'].includes(state.data?.kind);snow.visible=state.data?.kind==='snow';
   const rainCount=Math.min(240,Math.round(90+(state.data?.precipitation||0)*65));rainGeo.setDrawRange(0,rainCount*2);snowGeo.setDrawRange(0,200);
@@ -64,7 +62,7 @@ export function createAtmosphere({scene,renderer,sun,hemisphere,ground,layout,on
   if(rain.visible)rainGeo.attributes.position.needsUpdate=true;if(snow.visible)snowGeo.attributes.position.needsUpdate=true;
   return true;
  }
- function dispose(){scene.remove(root);const geometries=new Set(),materials=new Set();root.traverse(n=>{if(n.geometry)geometries.add(n.geometry);if(n.material)materials.add(n.material)});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());snowTexture.dispose()}
+ function dispose(){clouds.dispose();scene.remove(root);const geometries=new Set(),materials=new Set();root.traverse(n=>{if(n.geometry)geometries.add(n.geometry);if(n.material)materials.add(n.material)});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());snowTexture.dispose()}
  update(current,displayDate,true);
  return {update,tick,dispose,root,drops};
 }

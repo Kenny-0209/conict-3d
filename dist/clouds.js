@@ -13,7 +13,7 @@ export function cloudVolume(variant=0){
  const [nx,ny,nz]=CLOUD_VOLUME_SIZE,values=new Float32Array(nx*ny*nz),data=new Uint8Array(values.length*2),lobes=[];
  for(let i=0;i<9;i++){
   const x=(i%5-2)*.125+(hash(i,0,0,variant+1)-.5)*.055;
-  lobes.push([x,i<5?-.12+hash(i,1,0,variant+1)*.06:.04+hash(i,2,0,variant+1)*.14,(hash(i,3,0,variant+1)-.5)*.23,.11+hash(i,4,0,variant+1)*.065,.12+hash(i,5,0,variant+1)*.075,.13+hash(i,6,0,variant+1)*.055]);
+  lobes.push([x,i<5?-.12+hash(i,1,0,variant+1)*.06:.04+hash(i,2,0,variant+1)*.15,(hash(i,3,0,variant+1)-.5)*.23,.11+hash(i,4,0,variant+1)*.065,(i<5?.13:.18)+hash(i,5,0,variant+1)*.065,.13+hash(i,6,0,variant+1)*.055]);
  }
  for(let z=0;z<nz;z++)for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
   const px=x/(nx-1)-.5,py=y/(ny-1)-.5,pz=z/(nz-1)-.5;
@@ -22,7 +22,7 @@ export function cloudVolume(variant=0){
   const detail=noise((px+.5)*16,(py+.5)*12,(pz+.5)*14,variant+9)*.7+noise((px+.5)*37,(py+.5)*29,(pz+.5)*31,variant+23)*.3;
   // Erosion breaks up the outline, with an airy boundary and a soft, level base.
   const edge=smooth(Math.min(.5-Math.abs(px),.5-Math.abs(py),.5-Math.abs(pz))/.07);
-  values[x+nx*(y+ny*z)]=clamp((density-.13-(1-detail)*.22)*1.15)*edge*smooth((py+.39)/.10);
+  values[x+nx*(y+ny*z)]=clamp((density-.17-(1-detail)*.28)*1.8)*edge*smooth((py+.39)/.10);
  }
  const sample=(x,y,z)=>x<0||x>=nx||y<0||y>=ny||z<0||z>=nz?0:values[x+nx*(y+ny*z)];
  for(let z=0;z<nz;z++)for(let y=0;y<ny;y++)for(let x=0;x<nx;x++){
@@ -107,10 +107,10 @@ export function createClouds(bounds,{compact=false}={}){
   for(let i=0;i<root.children.length;i++){
    root.children[i].visible=i<count;
    const u=materials[i].uniforms;
-   u.lightTint.value.set(level>.5?'#fffdf6':'#71899f');u.shadeTint.value.set(level>.5?'#a9bac9':'#324b62');
+   u.lightTint.value.set(level>.5?'#fffdf6':'#71899f');u.shadeTint.value.set(level>.5?'#8199b3':'#273f58');
    if(phase==='dawn'||phase==='dusk')u.lightTint.value.lerp(new T.Color('#f2c5a8'),.4);
    if(sky)u.skyTint.value.copy(sky);
-   u.opacity.value=.50+level*.35;u.densityScale.value=6+amount*3+(wet?1:0);
+   u.opacity.value=.62+level*.34;u.densityScale.value=12+amount*6+(wet?1:0);
   }
  }
  function dispose(){root.removeFromParent();geometry.dispose();materials.forEach(m=>m.dispose());volumes.forEach(t=>t.dispose())}

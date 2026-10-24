@@ -15,7 +15,7 @@ import {createClouds} from './clouds.js';
 const canvas=document.querySelector('canvas'),renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'low-power'}),scene=new T.Scene(),camera=new T.PerspectiveCamera(45,1,.1,150);
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 const field=createClouds({minX:-5,maxX:5,minZ:-3,maxZ:3},{compact:innerWidth<761});scene.add(field.root);
-const controls=new OrbitControls(camera,canvas);controls.target.set(-2,8,-12);controls.minDistance=5;controls.maxDistance=55;camera.position.set(7,9.8,12);controls.update();
+const controls=new OrbitControls(camera,canvas);controls.target.set(-2,8.5,-12);controls.minDistance=5;controls.maxDistance=55;camera.position.set(6,10.4,4);controls.update();
 const conditions={day:{level:1,phase:'day',sky:'#c5d9e7'},dusk:{level:.4,phase:'dusk',sky:'#b28d8b'},night:{level:0,phase:'night',sky:'#172938'}};
 function setSky(id){const x=conditions[id];scene.background=new T.Color(x.sky);field.update({...x,coverage:.9,sky:scene.background});document.body.style.color=id==='night'?'#d8e4ed':'#253e4a';document.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.sky===id));render()}
 function render(){renderer.render(scene,camera);document.querySelector('#metric').textContent=renderer.info.render.calls+' draw calls · 720 KiB volume · '+(innerWidth<761?20:28)+' steps'}
