@@ -2,7 +2,7 @@ export const purposes={counsel:{label:'상담하고 싶어요',short:'상담',hi
 export const grades=['1학년','2학년','3학년','4학년','대학원생','기타'];
 export const timeSlots=['오전 09:00–12:00','오후 13:00–18:00','시간을 함께 정하고 싶어요'];
 export const researchAreas=['건설 로보틱스','건설 영상·컴퓨터 비전','로봇 학습','작업계획·공정 최적화','직접 적을게요','아직 탐색 중이에요'];
-import {privacyPolicy,deletionDeadline,koreanTimestamp} from './letter-privacy.js?v=privacy20261025';
+import {privacyPolicy,deletionDeadline,koreanTimestamp} from './letter-privacy.js?v=privacy20261025c';
 export const branchFields=['topic','date','time','question','motivation','research','researchOther'];
 const clean=value=>typeof value==='string'?value.trim():'';
 export function todayKST(now=new Date()){const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now).map(p=>[p.type,p.value]));return `${p.year}-${p.month}-${p.day}`}
