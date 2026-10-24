@@ -27,7 +27,7 @@ export const furniture=[
   {id:'monitors',name:'3대 모니터',en:'Triple monitor setup',photo:11,detail:'가로 화면 2대와 세로 화면 1대. 모니터 암, 받침대, 상단 조명과 웹캠.',size:'시안 가로 155 cm'},
   {id:'tower',name:'컴퓨터 본체',en:'PC tower',photo:5,detail:'검정 타워 케이스, 전면 통풍구, 상단 버튼과 세 개의 팬.',size:'시안 24 × 45 × 48 cm'},
   {id:'partition',name:'회색 파티션',en:'Desk partition',photo:10,detail:'회색 패브릭 표면, 둥근 모서리, 흰색 고정 브래킷과 메모지.',size:'시안 160 × 4 × 58 cm'},
-  {id:'meeting',name:'연구실 회의 테이블',en:'Shared table',photo:8,detail:'밝은 목재 상판, 둥근 모서리, 흰색 다리와 간식 접시.',size:'실측 상판 200 × 95 cm · 높이 74 cm는 시안'},
+  {id:'meeting',name:'연구실 회의 테이블',en:'Shared table',photo:8,detail:'밝은 목재 상판, 둥근 모서리, 흰색 다리와 간식 접시. 의자 팔걸이와 겹치지 않도록 상판을 높였습니다.',size:'실측 상판 200 × 95 cm · 상판 높이 약 89 cm는 시안'},
   {id:'tv',name:'이동식 대형 TV',en:'Mobile display',photo:13,detail:'검정 얇은 테두리, 후면 이중 지지대, 가로 트레이와 네 개의 바퀴.',size:'시안 화면 폭 190 cm'},
   {id:'bookshelf',name:'목재 책장',en:'Bookcase',photo:14,detail:'따뜻한 오크색 칸막이, 책·파일과 닫힌 수납칸.',size:'시안 150 × 36 × 195 cm'},
   {id:'cabinet',name:'흰색 수납장',en:'Low cabinet',photo:1,detail:'다섯 개의 세로 도어와 얇은 흰색 상판. 대형 TV 하부 수납장.',size:'시안 220 × 35 × 80 cm'},

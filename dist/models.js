@@ -49,7 +49,15 @@ export function monitors(k,active=true,prof=false){const g=new T.Group(),{box,ro
 export function tower(k,active=true){let g=new T.Group();k.box(g,[.245,.48,.445],[0,.26,0],'#263035',.025);k.box(g,[.222,.43,.011],[0,.28,.228],'#20272c',.014);for(let y=.15;y<.47;y+=.13){k.ring(g,.047,.004,[0,y,.24],active?'#88c4c0':'#566466',[0,0,0]);for(let i=0;i<6;i++){let a=i*Math.PI/3;k.rod(g,[0,y,.24],[Math.sin(a)*.038,y+Math.cos(a)*.038,.24],.003,'#667979')}}for(let x=-.09;x<.10;x+=.018)k.box(g,[.005,.013,.29],[x,.511,-.01],'#3a494c',.001);k.ell(g,[.006,.002,.006],[.07,.514,.14],active?'#86c4bf':'#52636a');return g}
 export function desk(k){const g=new T.Group();g.name='높이 조절 책상';g.userData.furnitureType='desk';k.box(g,[1.60,.065,.80],[0,.741,0],palette.white,.036);for(let s of [-1,1]){k.box(g,[.085,.41,.095],[s*.64,.27,0],palette.white,.012);k.box(g,[.067,.245,.075],[s*.64,.585,0],'#c9d0cd',.005);k.box(g,[.095,.055,.71],[s*.64,.048,0],palette.white,.018)}k.box(g,[1.22,.06,.075],[0,.643,0],palette.metal,.008);k.box(g,[.20,.022,.067],[.58,.705,.36],palette.white,.018);k.box(g,[.045,.012,.02],[.635,.704,.397],'#3c575f',.002);return g}
 export function partition(k){let g=new T.Group();k.box(g,[1.62,.55,.047],[0,1.01,0],'#a4aeaa',.035);for(let s of [-1,1]){k.box(g,[.035,.15,.12],[s*.57,.79,0],palette.white,.008)}for(let i=0;i<3;i++)k.box(g,[.10,.10,.003],[.44-i*.115,1.055,.027],['#aeced0','#d7c4a0','#c4d1b9'][i],.001);return g}
-export function table(k,prof=false){let g=new T.Group();k.box(g,[prof?2.1:2.00,.065,prof ? .85 : .95],[0,.74,0],prof?'#c3945d':'#d4c29f',.065);for(let x of [-.72,.72])for(let z of [-.30,.30])k.rod(g,[x,.705,z],[x*1.10,.05,z*1.13],.025,prof?'#a7b6b7':palette.white);k.cyl(g,.12,.015,[0,.783,0],'#dbe2dc');for(let i=0;i<5;i++)k.box(g,[.037,.022,.05],[(i-2)*.035,.80,(i%2)*.04],'#6d9f9e',.006);return g}
+export function table(k,prof=false){
+ const g=new T.Group(),lift=prof?0:.12;
+ // Raise the lab tabletop above the chair arms; keep the feet on the floor.
+ k.box(g,[prof?2.1:2.00,.065,prof?.85:.95],[0,.74+lift,0],prof?'#c3945d':'#d4c29f',.065);
+ for(const x of [-.72,.72])for(const z of [-.30,.30])k.rod(g,[x,.705+lift,z],[x*1.10,.05,z*1.13],.025,prof?'#a7b6b7':palette.white);
+ k.cyl(g,.12,.015,[0,.783+lift,0],'#dbe2dc');
+ for(let i=0;i<5;i++)k.box(g,[.037,.022,.05],[(i-2)*.035,.80+lift,(i%2)*.04],'#6d9f9e',.006);
+ return g;
+}
 // Straight wall-side table visible beside the coat stand in room photo 14.
 export function wallTable(k){
  const g=new T.Group();g.name='professor wall-side table';
