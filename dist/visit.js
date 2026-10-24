@@ -1,4 +1,4 @@
-import {createAtmosphere,mountWeather} from './weather-scene.js?v=cloud20261025';
+import {createAtmosphere,mountWeather} from './weather-scene.js?v=core20261025';
 import {createProfiler} from './perf.js';
 import {batchStaticRoom} from './static-batch.js';
 import * as T from './vendor/three.module.js';

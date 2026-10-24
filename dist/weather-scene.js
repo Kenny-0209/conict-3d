@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {createClouds} from './clouds.js';
+import {createClouds} from './clouds.js?v=core20261025';
 import {contains,planBounds} from './layout.js';
 import {LAB_LOCATION,MAX_WEATHER_AGE,daylightAt,seoulMinutes,createWeatherClient,weatherKind} from './weather-data.js';
 
