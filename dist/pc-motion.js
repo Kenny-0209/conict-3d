@@ -4,7 +4,7 @@ import {localPoint} from './navigation.js';
 import {createLounge} from './lounge.js';
 import {createLoungeRig,coffeeSip} from './lounge-rig.js';
 import {smoothFacing,headingDifference} from './movement.js';
-import {nextBreak,firstBreaks,activityChoices,wanderGoal} from './roam-policy.js';
+import {nextBreak,firstBreaks,activityChoices,wanderGoal,MAX_AWAY} from './roam-policy.js';
 
 // Supports both the published morph rig and the newer joint rig without replacing model files.
 function rigFor(item){
@@ -21,7 +21,7 @@ function rigFor(item){
   const geometries=new Set();for(const root of [original,sit])root.traverse(n=>{if(n.geometry)geometries.add(n.geometry)});for(const g of geometries)g.dispose();
   return body;
 }
-export const BREAK_INTERVAL=180;
+export const BREAK_INTERVAL=330;
 // Unconnected introduction avatars still work; an explicit missed response
 // rests their hands. LAN presence remains a separate PC indicator.
 export const isWorking=r=>r.mode==='seated'&&r.state!=='no-response'&&typeof r.body.userData.updateWork==='function';
@@ -36,6 +36,7 @@ export function createPCMotion({items,nav,random=Math.random}){
     const breakRemaining=initialDelays[index];
     return {item,body,seat,approach:approach||seat,state:'unknown',mode:'seated',pos:{...seat},route:[],amount:1,phase:random()*Math.PI*2,wait:0,screens,activity:null,hasCoffee:false,breakRemaining,scheduleRetry:0,breakCount:0,lastActivity:null,wander:null,recentGoals:[],walkSpeed:.65,loungeRig:createLoungeRig(body)};
   });
+  let departureCooldown=0;
   const place=r=>{const p=r.item.node.worldToLocal(new T.Vector3(r.pos.x,r.item.o.y,r.pos.z));r.body.position.copy(p)};
   const face=(r,yaw,dt)=>{const target=yaw-r.item.node.rotation.y;r.body.rotation.y=smoothFacing(r.body.rotation.y,target,dt);return Math.abs(headingDifference(r.body.rotation.y,target))};
   function release(r){lounge.release(r);r.activity=null;r.hasCoffee=false;r.loungeRig.clear()}
@@ -48,14 +49,14 @@ export function createPCMotion({items,nav,random=Math.random}){
   for(const r of records){r.item.pcState='unknown';for(const s of r.screens)s.material.color.set('#56636a')}
   function startBreak(r,type,start=r.pos){
     const reserved=lounge.reserve(r,type,start);if(!reserved)return false;
-    r.activity={slot:reserved.slot,elapsed:0,duration:16+random()*18};r.route=reserved.path;r.mode='lounge-walk';r.wait=0;return true;
+    r.activity={slot:reserved.slot,elapsed:0,duration:12+random()*10};r.route=reserved.path;r.mode='lounge-walk';r.wait=0;return true;
   }
   function finishBreak(r){returnHome(r);r.wait=0}
   function findWander(r,start){return wanderGoal(nav,start,r.recentGoals,random,records.filter(other=>other!==r&&other.body.visible).map(other=>other.pos))}
   function rememberGoal(r,point){r.recentGoals.push({...point});if(r.recentGoals.length>3)r.recentGoals.shift()}
   function startWander(r,start){
     const goal=findWander(r,start);if(!goal)return false;
-    release(r);r.wander={remaining:1+Math.floor(random()*3),elapsed:0,duration:28+random()*28,failures:0};r.route=goal.path;rememberGoal(r,goal.point);r.wait=0;return true;
+    release(r);r.wander={remaining:Math.floor(random()*2),elapsed:0,duration:12+random()*8,failures:0};r.route=goal.path;rememberGoal(r,goal.point);r.wait=0;return true;
   }
   function arrived(r){
     if(r.mode!=='lounge-walk')return;
@@ -63,8 +64,9 @@ export function createPCMotion({items,nav,random=Math.random}){
     if(r.activity.slot.type==='rest'){r.mode='lounge-sit';r.amount=0}
     else{r.mode='brew';r.amount=0}
   }
-  function tick(dt,pausedSeat,elapsed=dt){for(const r of records){if(r.item.o.id===pausedSeat||!r.body.visible)continue;r.phase+=dt*7;
-    r.breakRemaining=Math.max(0,r.breakRemaining-elapsed);r.scheduleRetry=Math.max(0,r.scheduleRetry-elapsed);
+  function tick(dt,pausedSeat,elapsed=dt){departureCooldown=Math.max(0,departureCooldown-elapsed);for(const r of records){if(r.item.o.id===pausedSeat||!r.body.visible)continue;r.phase+=dt*7;
+    // The next break counts down only while at the desk, so a trip never consumes work time.
+    if(r.mode==='seated')r.breakRemaining=Math.max(0,r.breakRemaining-elapsed);r.scheduleRetry=Math.max(0,r.scheduleRetry-elapsed);
     if(r.mode==='stand'||r.mode==='sit'){
       const sitting=r.mode==='sit',turn=face(r,r.item.node.rotation.y+Math.PI,dt);
       if(sitting&&r.amount===0&&turn>.09){r.body.userData.pose(0);r.body.userData.gait(r.phase,false,0);place(r);continue}
@@ -76,9 +78,11 @@ export function createPCMotion({items,nav,random=Math.random}){
     if(r.mode==='seated'){
       if(isWorking(r))r.body.userData.updateWork(r.phase/7*1000);
       if(r.breakRemaining===0&&r.scheduleRetry===0){
+        // Include resting, returning and sitting-down people, even if temporarily hidden.
+        if(departureCooldown>0||records.filter(other=>other.mode!=='seated').length>=MAX_AWAY){r.scheduleRetry=6+random()*6;continue}
         // Plan from the clear aisle before standing; unavailable destinations do not move the body.
         let chosen=null;for(const type of activityChoices(r.lastActivity,random))if(type==='walk'?startWander(r,r.approach):startBreak(r,type,r.approach)){chosen=type;break}
-        if(chosen){r.mode='stand';r.lastActivity=chosen;r.walkSpeed=.50+random()*.24;r.breakRemaining=nextBreak(random);r.breakCount++}
+        if(chosen){r.mode='stand';r.lastActivity=chosen;r.walkSpeed=.50+random()*.12;r.breakRemaining=nextBreak(random);r.breakCount++;departureCooldown=18+random()*17}
         else r.scheduleRetry=4+random()*3;
       }
       continue;
